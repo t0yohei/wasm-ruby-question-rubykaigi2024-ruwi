@@ -1,0 +1,48 @@
+<html>
+<head>
+</head>
+<body>
+  <div id="app"></div>
+  <script src="https://getty104.github.io/ruby-wasm-vdom/index.js"></script>
+  <script type="text/ruby">
+      require "js"
+
+      puts RUBY_VERSION
+
+      state = {
+        question: { choices: ['hoge', 'piyo', 'fuga', 'foo'], answerIndex: 0 },
+        result: ''
+      }
+
+      actions = {
+        selectChoice: ->(question, choiceIndex) {
+          if question[:answerIndex] == choiceIndex
+            state[:result] = '正解！'
+          else
+            state[:result] = '間違い！'
+          end
+        }
+      }
+
+      view = ->(state, actions) {
+          eval RubyWasmVdom::DomParser.parse(<<-DOM)
+            <div>
+                <button onclick='{->(e) { actions[:selectChoice].call(state[:question], 0) } }'>{state[:question][:choices][0]}</button>
+                <button onclick='{->(e) { actions[:selectChoice].call(state[:question], 1) } }'>{state[:question][:choices][1]}</button>
+                <button onclick='{->(e) { actions[:selectChoice].call(state[:question], 2) } }'>{state[:question][:choices][2]}</button>
+                <button onclick='{->(e) { actions[:selectChoice].call(state[:question], 3) } }'>{state[:question][:choices][3]}</button>
+
+                <p>{"Result is #{state[:result]}"}</p>
+            </div>
+          DOM
+      }
+
+      RubyWasmVdom::App.new(
+        el: "#app",
+        state:,
+        view:,
+        actions:
+      )
+    </script>
+</body>
+</html>
