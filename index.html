@@ -17,34 +17,37 @@
 
       state = {
         questions: [
-          { choices: ['hoge', 'piyo', 'fuga', 'foo'], answerIndex: 0, description: 'hoge', selectedChoiceIndex: nil },
-          { choices: ['hoge2', 'piyo2', 'fuga2', 'foo2'], answerIndex: 1, description: 'hoge2', selectedChoiceIndex: nil },
-          { choices: ['hoge3', 'piyo3', 'fuga3', 'foo3'], answerIndex: 2, description: 'hoge3', selectedChoiceIndex: nil },
-          { choices: ['hoge4', 'piyo4', 'fuga4', 'foo4'], answerIndex: 3, description: 'hoge4', selectedChoiceIndex: nil },
-          { choices: ['hoge5', 'piyo5', 'fuga5', 'foo5'], answerIndex: 0, description: 'hoge5', selectedChoiceIndex: nil },
-          { choices: ['hoge6', 'piyo6', 'fuga6', 'foo6'], answerIndex: 1, description: 'hoge6', selectedChoiceIndex: nil },
+          { title: '問題1', choices: ['hoge', 'piyo', 'fuga', 'foo'], answerIndex: 0, description: 'hoge' },
+          { title: '問題2', choices: ['hoge2', 'piyo2', 'fuga2', 'foo2'], answerIndex: 1, description: 'hoge2' },
+          { title: '問題3', choices: ['hoge3', 'piyo3', 'fuga3', 'foo3'], answerIndex: 2, description: 'hoge3' },
+          { title: '問題4', choices: ['hoge4', 'piyo4', 'fuga4', 'foo4'], answerIndex: 3, description: 'hoge4' },
+          { title: '問題5', choices: ['hoge5', 'piyo5', 'fuga5', 'foo5'], answerIndex: 0, description: 'hoge5' },
+          { title: '問題6', choices: ['hoge6', 'piyo6', 'fuga6', 'foo6'], answerIndex: 1, description: 'hoge6' },
         ],
         questionIndex: 0,
-        lastQuestionResult: ''
+        correctAnswerCount: 0
       }
 
+      # 結果画面用の View
       resultView = ->(state, actions) {
         eval RubyWasmVdom::DomParser.parse(<<-DOM)
           <div>
-              <p>{"Result is #{state[:lastQuestionResult]}"}</p>
+              <p>{"結果は 5 問中 #{state[:correctAnswerCount]} 問正解！"}</p>
+              <button onclick='{->(e) { actions[:reset].call(0, 0) } }'>リセット</button>
           </div>
         DOM
       }
 
+      # 初期表示 View
       initialView = ->(state, actions) {
         eval RubyWasmVdom::DomParser.parse(<<-DOM)
           <div>
+              <p>{state[:questions][state[:questionIndex]][:title]}</p>
+
               <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
               <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
               <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
               <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
-
-              <p>{"Result is #{state[:lastQuestionResult]}"}</p>
           </div>
         DOM
       }
@@ -53,24 +56,30 @@
         selectChoice: ->(question, choiceIndex) {
           state[:questionIndex] += 1
           if question[:answerIndex] == choiceIndex
+            state[:correctAnswerCount] += 1
             state[:lastQuestionResult] = '正解！'
           else
             state[:lastQuestionResult] = '間違い！'
           end
 
-          if state[:questionIndex] == 3
+          if state[:questionIndex] == 5
             renderApp(state: state, view: resultView, actions: actions)
-          elsif state[:questionIndex] == 4
-            renderApp(state: state, view: initialView, actions: actions)
           end
+        },
+
+        # actions 内で引数の数を合わせないとバグるので無理やり合わせる
+        reset: ->(_a, _b) {
+          JS.global[:window][:location].reload();
         }
       }
 
       def renderApp(state:, view:, actions:)
-        el = JS.global[:document].getElementById('app');
+        appEl = JS.global[:document].getElementById('app');
+        children = appEl[:children]
 
-        if el[:innerHTML] != JS::Null
-          el[:innerHTML] = ''
+        # 既存の view があれば非表示にする。(要素自体を消すと RubyWasmVdom::App のエラーが出るので非表示で誤魔化す)
+        if children[:length].to_i > 0
+          children[0][:style][:display] = 'none'
         end
 
         RubyWasmVdom::App.new(
