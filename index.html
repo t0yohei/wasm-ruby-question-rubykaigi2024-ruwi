@@ -5,44 +5,83 @@
   <div id="app"></div>
   <script src="https://getty104.github.io/ruby-wasm-vdom/index.js"></script>
   <script type="text/ruby">
+      # 要件
+      # 25 件の問題から 5 つをランダムで選んで出題
+      # 1 つの問題には 4 つの選択肢があり、正解は一つ
+      # 回答を選択すると、正解・不正解が表示されて次の問題に移る
+      # 5 問解答が終わると結果画面が表示されて、正答数と各問題の解説が表示される
+      # reset を実行すると、最初に戻る
       require "js"
 
       puts RUBY_VERSION
 
       state = {
-        question: { choices: ['hoge', 'piyo', 'fuga', 'foo'], answerIndex: 0 },
-        result: ''
+        questions: [
+          { choices: ['hoge', 'piyo', 'fuga', 'foo'], answerIndex: 0, description: 'hoge', selectedChoiceIndex: nil },
+          { choices: ['hoge2', 'piyo2', 'fuga2', 'foo2'], answerIndex: 1, description: 'hoge2', selectedChoiceIndex: nil },
+          { choices: ['hoge3', 'piyo3', 'fuga3', 'foo3'], answerIndex: 2, description: 'hoge3', selectedChoiceIndex: nil },
+          { choices: ['hoge4', 'piyo4', 'fuga4', 'foo4'], answerIndex: 3, description: 'hoge4', selectedChoiceIndex: nil },
+          { choices: ['hoge5', 'piyo5', 'fuga5', 'foo5'], answerIndex: 0, description: 'hoge5', selectedChoiceIndex: nil },
+          { choices: ['hoge6', 'piyo6', 'fuga6', 'foo6'], answerIndex: 1, description: 'hoge6', selectedChoiceIndex: nil },
+        ],
+        questionIndex: 0,
+        lastQuestionResult: ''
+      }
+
+      resultView = ->(state, actions) {
+        eval RubyWasmVdom::DomParser.parse(<<-DOM)
+          <div>
+              <p>{"Result is #{state[:lastQuestionResult]}"}</p>
+          </div>
+        DOM
+      }
+
+      initialView = ->(state, actions) {
+        eval RubyWasmVdom::DomParser.parse(<<-DOM)
+          <div>
+              <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
+              <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
+              <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
+              <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
+
+              <p>{"Result is #{state[:lastQuestionResult]}"}</p>
+          </div>
+        DOM
       }
 
       actions = {
         selectChoice: ->(question, choiceIndex) {
+          state[:questionIndex] += 1
           if question[:answerIndex] == choiceIndex
-            state[:result] = '正解！'
+            state[:lastQuestionResult] = '正解！'
           else
-            state[:result] = '間違い！'
+            state[:lastQuestionResult] = '間違い！'
+          end
+
+          if state[:questionIndex] == 3
+            renderApp(state: state, view: resultView, actions: actions)
+          elsif state[:questionIndex] == 4
+            renderApp(state: state, view: initialView, actions: actions)
           end
         }
       }
 
-      view = ->(state, actions) {
-          eval RubyWasmVdom::DomParser.parse(<<-DOM)
-            <div>
-                <button onclick='{->(e) { actions[:selectChoice].call(state[:question], 0) } }'>{state[:question][:choices][0]}</button>
-                <button onclick='{->(e) { actions[:selectChoice].call(state[:question], 1) } }'>{state[:question][:choices][1]}</button>
-                <button onclick='{->(e) { actions[:selectChoice].call(state[:question], 2) } }'>{state[:question][:choices][2]}</button>
-                <button onclick='{->(e) { actions[:selectChoice].call(state[:question], 3) } }'>{state[:question][:choices][3]}</button>
+      def renderApp(state:, view:, actions:)
+        el = JS.global[:document].getElementById('app');
 
-                <p>{"Result is #{state[:result]}"}</p>
-            </div>
-          DOM
-      }
+        if el[:innerHTML] != JS::Null
+          el[:innerHTML] = ''
+        end
 
-      RubyWasmVdom::App.new(
-        el: "#app",
-        state:,
-        view:,
-        actions:
-      )
+        RubyWasmVdom::App.new(
+          el: "#app",
+          state:,
+          view:,
+          actions:
+        )
+      end
+
+      renderApp(state: state, view: initialView, actions: actions)
     </script>
 </body>
 </html>
