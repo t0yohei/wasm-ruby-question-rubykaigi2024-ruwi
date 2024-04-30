@@ -81,12 +81,33 @@
       )
     end
 
-    def initialize
+    def showQuestionView
       state = {
         questions: QUESTIONS.shuffle[0..][0..5],
         questionIndex: 0,
         correctAnswerCount: 0,
         lastQuestionResult: ''
+      }
+
+
+      # 問題 View
+      questionView = ->(state, actions) {
+        eval RubyWasmVdom::DomParser.parse(<<-DOM)
+          <div>
+            <h2>{"第 #{state[:questions].index(state[:questions][state[:questionIndex]]) + 1} 問: #{state[:questions][state[:questionIndex]][:description]}"}</h2>
+
+            <div class="timer" >10</div>
+
+            <div class="questionButtons">
+              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
+              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
+              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
+              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
+            </div>
+
+            <p>{"前の問題の結果は: #{state[:lastQuestionResult]}"}</p>
+          </div>
+        DOM
       }
 
       # 結果画面用の View
@@ -117,26 +138,6 @@
         DOM
       }
 
-      # 初期表示 View
-      initialView = ->(state, actions) {
-        eval RubyWasmVdom::DomParser.parse(<<-DOM)
-          <div>
-            <h2>{"第 #{state[:questions].index(state[:questions][state[:questionIndex]]) + 1} 問: #{state[:questions][state[:questionIndex]][:description]}"}</h2>
-
-            <div class="timer" >10</div>
-
-            <div class="questionButtons">
-              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
-              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
-              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
-              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
-            </div>
-
-            <p>{"前の問題の結果は: #{state[:lastQuestionResult]}"}</p>
-          </div>
-        DOM
-      }
-
       actions = {
         selectChoice: ->(question, choiceIndex) {
           state[:questionIndex] += 1
@@ -158,10 +159,11 @@
         }
       }
 
-      renderApp(state: state, view: initialView, actions: actions)
+
+      renderApp(state: state, view: questionView, actions: actions)
     end
 
-    initialize()
+    showQuestionView()
   </script>
 </body>
 </html>
