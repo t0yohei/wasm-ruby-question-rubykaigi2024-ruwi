@@ -81,35 +81,7 @@
       )
     end
 
-    def showQuestionView
-      state = {
-        questions: QUESTIONS.shuffle[0..][0..5],
-        questionIndex: 0,
-        correctAnswerCount: 0,
-        lastQuestionResult: ''
-      }
-
-
-      # 問題 View
-      questionView = ->(state, actions) {
-        eval RubyWasmVdom::DomParser.parse(<<-DOM)
-          <div>
-            <h2>{"第 #{state[:questions].index(state[:questions][state[:questionIndex]]) + 1} 問: #{state[:questions][state[:questionIndex]][:description]}"}</h2>
-
-            <div class="timer" >10</div>
-
-            <div class="questionButtons">
-              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
-              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
-              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
-              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
-            </div>
-
-            <p>{"前の問題の結果は: #{state[:lastQuestionResult]}"}</p>
-          </div>
-        DOM
-      }
-
+    def showResultView(state)
       # 結果画面用の View
       resultView = ->(state, actions) {
         eval RubyWasmVdom::DomParser.parse(<<-DOM)
@@ -139,6 +111,44 @@
       }
 
       actions = {
+        # actions 内で引数の数を合わせないとバグるので無理やり合わせる
+        reset: ->(_a, _b) {
+          JS.global[:window][:location].reload();
+        }
+      }
+
+      renderApp(state: state, view: resultView, actions: actions)
+    end
+
+    def showQuestionView
+      state = {
+        questions: QUESTIONS.shuffle[0..][0..5],
+        questionIndex: 0,
+        correctAnswerCount: 0,
+        lastQuestionResult: ''
+      }
+
+      # 問題 View
+      questionView = ->(state, actions) {
+        eval RubyWasmVdom::DomParser.parse(<<-DOM)
+          <div>
+            <h2>{"第 #{state[:questions].index(state[:questions][state[:questionIndex]]) + 1} 問: #{state[:questions][state[:questionIndex]][:description]}"}</h2>
+
+            <div class="timer" >10</div>
+
+            <div class="questionButtons">
+              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
+              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
+              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
+              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
+            </div>
+
+            <p>{"前の問題の結果は: #{state[:lastQuestionResult]}"}</p>
+          </div>
+        DOM
+      }
+
+      actions = {
         selectChoice: ->(question, choiceIndex) {
           state[:questionIndex] += 1
           if question[:answerIndex] == choiceIndex
@@ -149,14 +159,9 @@
           end
 
           if state[:questionIndex] == 5
-            renderApp(state: state, view: resultView, actions: actions)
+            showResultView(state)
           end
         },
-
-        # actions 内で引数の数を合わせないとバグるので無理やり合わせる
-        reset: ->(_a, _b) {
-          JS.global[:window][:location].reload();
-        }
       }
 
 
