@@ -22,78 +22,6 @@
 
     puts RUBY_VERSION
 
-    state = {
-      questions: [
-        { title: '問題1', detail: 'これはどれ？', choices: ['hoge', 'piyo', 'fuga', 'foo'], answerIndex: 0, explanation: '解説' },
-        { title: '問題2', detail: 'これはどれでしょう？', choices: ['hoge2', 'piyo2', 'fuga2', 'foo2'], answerIndex: 1, explanation: '解説2' },
-        { title: '問題3', detail: 'これはどれだ？', choices: ['hoge3', 'piyo3', 'fuga3', 'foo3'], answerIndex: 2, explanation: '解説3' },
-        { title: '問題4', detail: 'これはどれかな？', choices: ['hoge4', 'piyo4', 'fuga4', 'foo4'], answerIndex: 3, explanation: '解説4' },
-        { title: '問題5', detail: 'これはどれ？', choices: ['hoge5', 'piyo5', 'fuga5', 'foo5'], answerIndex: 0, explanation: '解説5' },
-        { title: '問題6', detail: 'これはどれ？', choices: ['hoge6', 'piyo6', 'fuga6', 'foo6'], answerIndex: 1, explanation: '解説6' },
-      ],
-      questionIndex: 0,
-      correctAnswerCount: 0,
-      lastQuestionResult: ''
-    }
-
-    # 結果画面用の View
-    resultView = ->(state, actions) {
-      eval RubyWasmVdom::DomParser.parse(<<-DOM)
-        <div>
-          <h2>結果</h2>
-          <p>{"結果は 5 問中 #{state[:correctAnswerCount]} 問正解！"}</p>
-
-          <h2>解説</h2>
-          <p>{"#{state[:questions][0][:title]}: #{state[:questions][0][:explanation]}"}</p>
-          <p>{"#{state[:questions][1][:title]}: #{state[:questions][1][:explanation]}"}</p>
-          <p>{"#{state[:questions][2][:title]}: #{state[:questions][2][:explanation]}"}</p>
-          <p>{"#{state[:questions][3][:title]}: #{state[:questions][3][:explanation]}"}</p>
-          <p>{"#{state[:questions][4][:title]}: #{state[:questions][4][:explanation]}"}</p>
-
-          <button onclick='{->(e) { actions[:reset].call(0, 0) } }'>リセット</button>
-        </div>
-      DOM
-    }
-
-    # 初期表示 View
-    initialView = ->(state, actions) {
-      eval RubyWasmVdom::DomParser.parse(<<-DOM)
-        <div>
-          <h2>問題</h2>
-
-          <p>{"#{state[:questions][state[:questionIndex]][:title]}: #{state[:questions][state[:questionIndex]][:detail]}"}</p>
-
-          <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
-          <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
-          <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
-          <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
-
-          <p>{"前の問題の結果は: #{state[:lastQuestionResult]}"}</p>
-        </div>
-      DOM
-    }
-
-    actions = {
-      selectChoice: ->(question, choiceIndex) {
-        state[:questionIndex] += 1
-        if question[:answerIndex] == choiceIndex
-          state[:correctAnswerCount] += 1
-          state[:lastQuestionResult] = '正解 :)'
-        else
-          state[:lastQuestionResult] = '不正解 :('
-        end
-
-        if state[:questionIndex] == 5
-          renderApp(state: state, view: resultView, actions: actions)
-        end
-      },
-
-      # actions 内で引数の数を合わせないとバグるので無理やり合わせる
-      reset: ->(_a, _b) {
-        JS.global[:window][:location].reload();
-      }
-    }
-
     def renderApp(state:, view:, actions:)
       appEl = JS.global[:document].getElementById('app');
       children = appEl[:children]
@@ -111,7 +39,96 @@
       )
     end
 
-    renderApp(state: state, view: initialView, actions: actions)
+    def initialize
+      state = {
+        questions: [
+          { title: '問題1', description: 'これはどれ？', choices: ['hoge', 'piyo', 'fuga', 'foo'], answerIndex: 0, explanation: '解説' },
+          { title: '問題2', description: 'これはどれでしょう？', choices: ['hoge2', 'piyo2', 'fuga2', 'foo2'], answerIndex: 1, explanation: '解説2' },
+          { title: '問題3', description: 'これはどれだ？', choices: ['hoge3', 'piyo3', 'fuga3', 'foo3'], answerIndex: 2, explanation: '解説3' },
+          { title: '問題4', description: 'これはどれかな？', choices: ['hoge4', 'piyo4', 'fuga4', 'foo4'], answerIndex: 3, explanation: '解説4' },
+          { title: '問題5', description: 'これはどれ？', choices: ['hoge5', 'piyo5', 'fuga5', 'foo5'], answerIndex: 0, explanation: '解説5' },
+          { title: '問題6', description: 'これはどれ？', choices: ['hoge6', 'piyo6', 'fuga6', 'foo6'], answerIndex: 1, explanation: '解説6' },
+          { title: '問題7', description: 'これはどれ？', choices: ['hoge', 'piyo', 'fuga', 'foo'], answerIndex: 0, explanation: '解説7' },
+          { title: '問題8', description: 'これはどれでしょう？', choices: ['hoge2', 'piyo2', 'fuga2', 'foo2'], answerIndex: 1, explanation: '解説8' },
+          { title: '問題9', description: 'これはどれだ？', choices: ['hoge3', 'piyo3', 'fuga3', 'foo3'], answerIndex: 2, explanation: '解説9' },
+          { title: '問題10', description: 'これはどれかな？', choices: ['hoge4', 'piyo4', 'fuga4', 'foo4'], answerIndex: 3, explanation: '解説10' },
+          { title: '問題11', description: 'これはどれ？', choices: ['hoge5', 'piyo5', 'fuga5', 'foo5'], answerIndex: 0, explanation: '解説11' },
+          { title: '問題12', description: 'これはどれ？', choices: ['hoge6', 'piyo6', 'fuga6', 'foo6'], answerIndex: 1, explanation: '解説12' },
+          { title: '問題13', description: 'これはどれ？', choices: ['hoge', 'piyo', 'fuga', 'foo'], answerIndex: 0, explanation: '解説13' },
+          { title: '問題14', description: 'これはどれでしょう？', choices: ['hoge2', 'piyo2', 'fuga2', 'foo2'], answerIndex: 1, explanation: '解説14' },
+          { title: '問題15', description: 'これはどれだ？', choices: ['hoge3', 'piyo3', 'fuga3', 'foo3'], answerIndex: 2, explanation: '解説15' },
+          { title: '問題16', description: 'これはどれかな？', choices: ['hoge4', 'piyo4', 'fuga4', 'foo4'], answerIndex: 3, explanation: '解説16' },
+          { title: '問題17', description: 'これはどれ？', choices: ['hoge5', 'piyo5', 'fuga5', 'foo5'], answerIndex: 0, explanation: '解説17' },
+          { title: '問題18', description: 'これはどれ？', choices: ['hoge6', 'piyo6', 'fuga6', 'foo6'], answerIndex: 1, explanation: '解説18' },
+          { title: '問題19', description: 'これはどれ？', choices: ['hoge', 'piyo', 'fuga', 'foo'], answerIndex: 0, explanation: '解説19' },
+        ],
+        questionIndex: 0,
+        correctAnswerCount: 0,
+        lastQuestionResult: ''
+      }
+
+      # 結果画面用の View
+      resultView = ->(state, actions) {
+        eval RubyWasmVdom::DomParser.parse(<<-DOM)
+          <div>
+            <h2>結果</h2>
+            <p>{"結果は 5 問中 #{state[:correctAnswerCount]} 問正解！"}</p>
+
+            <h2>解説</h2>
+            <p>{"#{state[:questions][0][:title]}: #{state[:questions][0][:explanation]}"}</p>
+            <p>{"#{state[:questions][1][:title]}: #{state[:questions][1][:explanation]}"}</p>
+            <p>{"#{state[:questions][2][:title]}: #{state[:questions][2][:explanation]}"}</p>
+            <p>{"#{state[:questions][3][:title]}: #{state[:questions][3][:explanation]}"}</p>
+            <p>{"#{state[:questions][4][:title]}: #{state[:questions][4][:explanation]}"}</p>
+
+            <button onclick='{->(e) { actions[:reset].call(0, 0) } }'>リセット</button>
+          </div>
+        DOM
+      }
+
+      # 初期表示 View
+      initialView = ->(state, actions) {
+        eval RubyWasmVdom::DomParser.parse(<<-DOM)
+          <div>
+            <h2>問題</h2>
+
+            <p>{"#{state[:questions][state[:questionIndex]][:title]}: #{state[:questions][state[:questionIndex]][:description]}"}</p>
+
+            <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
+            <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
+            <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
+            <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
+
+            <p>{"前の問題の結果は: #{state[:lastQuestionResult]}"}</p>
+          </div>
+        DOM
+      }
+
+      actions = {
+        selectChoice: ->(question, choiceIndex) {
+          state[:questionIndex] += 1
+          if question[:answerIndex] == choiceIndex
+            state[:correctAnswerCount] += 1
+            state[:lastQuestionResult] = '正解 :)'
+          else
+            state[:lastQuestionResult] = '不正解 :('
+          end
+
+          if state[:questionIndex] == 5
+            renderApp(state: state, view: resultView, actions: actions)
+          end
+        },
+
+        # actions 内で引数の数を合わせないとバグるので無理やり合わせる
+        reset: ->(_a, _b) {
+          JS.global[:window][:location].reload();
+        }
+      }
+
+      renderApp(state: state, view: initialView, actions: actions)
+    end
+
+    initialize()
   </script>
 </body>
 </html>
