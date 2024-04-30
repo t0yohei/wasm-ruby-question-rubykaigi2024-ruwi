@@ -5,6 +5,37 @@
   <title>RubyQuize 2024</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <script type="module" src="https://getty104.github.io/ruby-wasm-vdom/index.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .timer {
+      font-size: 80px;
+      text-align: center;
+      margin: 100px 0;
+    }
+
+    .questionButtons {
+      margin: 0 32px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px;
+    }
+
+    .questionButton {
+      margin: 0;
+      padding: 0 16px;
+      height: 48px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   <h1>RubyQuize 2024</h1>
@@ -90,14 +121,16 @@
       initialView = ->(state, actions) {
         eval RubyWasmVdom::DomParser.parse(<<-DOM)
           <div>
-            <h2>問題</h2>
+            <h2>{"第 #{state[:questions].index(state[:questions][state[:questionIndex]]) + 1} 問: #{state[:questions][state[:questionIndex]][:description]}"}</h2>
 
-            <p>{"第 #{state[:questions].index(state[:questions][state[:questionIndex]]) + 1} 問: #{state[:questions][state[:questionIndex]][:description]}"}</p>
+            <div class="timer" >10</div>
 
-            <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
-            <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
-            <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
-            <button onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
+            <div class="questionButtons">
+              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
+              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
+              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
+              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
+            </div>
 
             <p>{"前の問題の結果は: #{state[:lastQuestionResult]}"}</p>
           </div>
