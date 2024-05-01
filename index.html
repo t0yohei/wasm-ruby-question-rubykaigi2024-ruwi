@@ -68,17 +68,22 @@
       appEl = JS.global[:document].getElementById('app');
       children = appEl[:children]
 
-      # 既存の view があれば非表示にする。(要素自体を消すと RubyWasmVdom::App のエラーが出るので非表示で誤魔化す)
+      # 既存の view があれば非表示にする。
       if children[:length].to_i > 0
-        children[0][:style][:display] = 'none'
+        children[0].remove()
       end
 
-      RubyWasmVdom::App.new(
-        el: "#app",
-        state:,
-        view:,
-        actions:
-      )
+      render = lambda {
+        RubyWasmVdom::App.new(
+          el: "#app",
+          state:,
+          view:,
+          actions:
+        )
+      }
+
+      # すぐに描画するとエラーになるので、少し待ってから描画する
+      JS.global.call(:setTimeout, JS.try_convert(render))
     end
 
     def showResultView(state)
@@ -111,7 +116,7 @@
       }
 
       actions = {
-        # actions 内で引数の数を合わせないとバグるので無理やり合わせる
+        # actions 内で引数の数を 2 つにしないとバグるので無理やり2つ設定する
         reset: ->(_a, _b) {
           JS.global[:window][:location].reload();
         }
@@ -120,14 +125,7 @@
       renderApp(state: state, view: resultView, actions: actions)
     end
 
-    def showQuestionView
-      state = {
-        questions: QUESTIONS.shuffle[0..][0..5],
-        questionIndex: 0,
-        correctAnswerCount: 0,
-        lastQuestionResult: ''
-      }
-
+    def showQuestionView(state)
       # 問題 View
       questionView = ->(state, actions) {
         eval RubyWasmVdom::DomParser.parse(<<-DOM)
@@ -164,11 +162,41 @@
         },
       }
 
-
       renderApp(state: state, view: questionView, actions: actions)
     end
 
-    showQuestionView()
+    def showInitialView(state)
+      # 初期表示 View
+      initialView = ->(state, actions) {
+        eval RubyWasmVdom::DomParser.parse(<<-DOM)
+          <div>
+            <button onclick='{->(e) { actions[:start].call(0, 0) } }'>スタート</button>
+          </div>
+        DOM
+      }
+
+      actions = {
+        # actions 内で引数の数を 2 つにしないとバグるので無理やり2つ設定する
+        start: ->(_a, _b) {
+          showQuestionView(state)
+        }
+      }
+
+      renderApp(state: state, view: initialView, actions: actions)
+    end
+
+    def initialize
+      state = {
+        questions: QUESTIONS.shuffle[0..][0..5],
+        questionIndex: 0,
+        correctAnswerCount: 0,
+        lastQuestionResult: ''
+      }
+
+      showInitialView(state)
+    end
+
+    initialize()
   </script>
 </body>
 </html>
