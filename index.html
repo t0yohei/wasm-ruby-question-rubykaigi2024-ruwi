@@ -166,7 +166,7 @@
           <div>
             <h2>{"第 #{state[:questions].index(state[:questions][state[:questionIndex]]) + 1} 問: #{state[:questions][state[:questionIndex]][:description]}"}</h2>
 
-            <div class="timer" >10</div>
+            <div class="timer" id="timer">30</div>
 
             <div class="questionButtons">
               <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
@@ -193,6 +193,10 @@
           if state[:questionIndex] == 5
             showResultView(state)
           end
+
+          # タイマーのリセット
+          timerEl = JS.global[:document].getElementById('timer')
+          timerEl[:textContent] = 30
         },
       }
 
@@ -235,13 +239,25 @@
         questions: QUESTIONS.shuffle[0..][0..5],
         questionIndex: 0,
         correctAnswerCount: 0,
-        lastQuestionResult: ''
+        lastQuestionResult: '',
       }
 
       showInitialView(state)
     end
 
     initialize()
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // タイマーの更新。ruby で実現できなかったので、JavaScript で実装
+      window.setInterval(() => {
+        timerEl = document.getElementById('timer')
+        if (!timerEl) return;
+        const currentValue = parseInt(timerEl.textContent)
+        timerEl.textContent = currentValue - 1;
+      }, 1000);
+    });
   </script>
 </body>
 </html>
