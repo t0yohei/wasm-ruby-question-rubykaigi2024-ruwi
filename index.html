@@ -15,6 +15,15 @@
       font-family: Arial, sans-serif;
     }
 
+    .changeLangButton {
+      margin: 0;
+      padding: 0 16px;
+      height: 40px;
+      font-size: 16px;
+      cursor: pointer;
+      float: right;
+    }
+
     .timer {
       font-size: 80px;
       text-align: center;
@@ -90,6 +99,19 @@
       { description: 'Ruby のグローバル変数の接頭子 (記号) は?', choices: ['$', '@@', '@', '~'], answerIndex: 0, explanation: 'Ruby ではグローバル変数の接頭子 (記号) として $ を使用します。' },
     ]
 
+    # TODO 翻訳
+    ENGLISH_QUESTIONS = [
+      { description: '(en)RubyKaigi 2023 の開催地は?', choices: ['長野県松本市', '三重県津市', '福岡県福岡市', '宮城県仙台市'], answerIndex: 0, explanation: 'RubyKaigi 2023 は長野県松本市で開催されました。' },
+      { description: '(en)RubyKaigi 2022 の開催地は?', choices: ['長野県松本市', '三重県津市', '京都府京都市', '広島県広島市'], answerIndex: 1, explanation: 'RubyKaigi 2023 は三重県津市で開催されました。' },
+      { description: '(en)RubyKaigi 2019 の開催地は?', choices: ['広島県広島市', '三重県津市', '福岡県福岡市', '京都府京都市'], answerIndex: 2, explanation: 'RubyKaigi 2023 は福岡県福岡市で開催されました。' },
+      { description: '(en)RubyKaigi 2018 の開催地は?', choices: ['長野県松本市', '京都府京都市', '三重県津市', '宮城県仙台市'], answerIndex: 3, explanation: 'RubyKaigi 2023 は宮城県仙台市で開催されました。' },
+      { description: '(en)RubyKaigi 2017 の開催地は?', choices: ['広島県広島市', '三重県津市', '京都府京都市', '宮城県仙台市'], answerIndex: 0, explanation: 'RubyKaigi 2023 は広島県広島市で開催されました。' },
+      { description: '(en)RubyKaigi 2016 の開催地は?', choices: ['長野県松本市', '京都府京都市', '広島県広島市', '宮城県仙台市'], answerIndex: 1, explanation: 'RubyKaigi 2023 は京都府京都市で開催されました。' },
+      { description: '(en)Ruby のインスタンス変数の接頭子 (記号) は?', choices: ['@@', '@', '$', '~'], answerIndex: 1, explanation: 'Ruby ではインスタンス変数の接頭子 (記号) として @ を使用します。' },
+      { description: '(en)Ruby のクラス変数の接頭子 (記号) は?', choices: ['$', '@', '@@', '~'], answerIndex: 2, explanation: 'Ruby ではのクラス変数の接頭子 (記号) として @@ を使用します。' },
+      { description: '(en)Ruby のグローバル変数の接頭子 (記号) は?', choices: ['$', '@@', '@', '~'], answerIndex: 0, explanation: 'Ruby ではグローバル変数の接頭子 (記号) として $ を使用します。' },
+    ]
+
     def renderApp(state:, view:, actions:)
       appEl = JS.global[:document].getElementById('app');
       children = appEl[:children]
@@ -159,6 +181,53 @@
       renderApp(state: state, view: resultView, actions: actions)
     end
 
+    def showResultViewEnglish(state)
+      # 結果画面用の View
+      resultViewEnglish = ->(state, actions) {
+        eval RubyWasmVdom::DomParser.parse(<<-DOM)
+          <div>
+            <h2>Result</h2>
+            <div class="resultArea">
+              <p>{"#{state[:correctAnswerCount]} of 5 questions answered correctly!"}</p>
+              <div class="techBlogLink">
+                <img src="qrcode.png" alt="QR Code to Tech Blog Page" width="100" height="100">
+                A description of this application is available on the Tech Blog(only Japanese).
+              </div>
+            </div>
+
+            <h2>Explanation</h2>
+            <p>{"Question 1: #{state[:questions][0][:description]}"}</p>
+            <p>{"explanation: #{state[:questions][0][:explanation]}"}</p>
+            <br/>
+            <p>{"Question 2: #{state[:questions][1][:description]}"}</p>
+            <p>{"explanation: #{state[:questions][1][:explanation]}"}</p>
+            <br/>
+            <p>{"Question 3: #{state[:questions][2][:description]}"}</p>
+            <p>{"explanation: #{state[:questions][2][:explanation]}"}</p>
+            <br/>
+            <p>{"Question 4: #{state[:questions][3][:description]}"}</p>
+            <p>{"explanation: #{state[:questions][3][:explanation]}"}</p>
+            <br/>
+            <p>{"Question 5: #{state[:questions][4][:description]}"}</p>
+            <p>{"explanation: #{state[:questions][4][:explanation]}"}</p>
+
+            <div class="startResetButtonArea">
+              <button class="startResetButton" onclick='{->(e) { actions[:reset].call(0, 0) } }'>reset</button>
+            </div>
+          </div>
+        DOM
+      }
+
+      actions = {
+        # actions 内で引数の数を 2 つにしないとバグるので無理やり2つ設定する
+        reset: ->(_a, _b) {
+          JS.global[:window][:location].reload();
+        }
+      }
+
+      renderApp(state: state, view: resultViewEnglish, actions: actions)
+    end
+
     def showQuestionView(state)
       # 問題 View
       questionView = ->(state, actions) {
@@ -203,12 +272,57 @@
       renderApp(state: state, view: questionView, actions: actions)
     end
 
+    def showQuestionViewEnglish(state)
+      # 英語用問題 View
+      questionViewEnglish = ->(state, actions) {
+        eval RubyWasmVdom::DomParser.parse(<<-DOM)
+          <div>
+            <h2>{"Question #{state[:questions].index(state[:questions][state[:questionIndex]]) + 1} : #{state[:questions][state[:questionIndex]][:description]}"}</h2>
+
+            <div class="timer" id="timer">30</div>
+
+            <div class="questionButtons">
+              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
+              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
+              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
+              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
+            </div>
+
+            <p>{"The result of the previous question is: #{state[:lastQuestionResult]}"}</p>
+          </div>
+        DOM
+      }
+
+      actions = {
+        selectChoice: ->(question, choiceIndex) {
+          state[:questionIndex] += 1
+          if question[:answerIndex] == choiceIndex
+            state[:correctAnswerCount] += 1
+            state[:lastQuestionResult] = 'correct :)'
+          else
+            state[:lastQuestionResult] = 'uncorrect :('
+          end
+
+          if state[:questionIndex] == 5
+            showResultViewEnglish(state)
+          end
+
+          # タイマーのリセット
+          timerEl = JS.global[:document].getElementById('timer')
+          timerEl[:textContent] = 30
+        },
+      }
+
+      renderApp(state: state, view: questionViewEnglish, actions: actions)
+    end
+
     def showInitialView(state)
       # 初期表示 View
       initialView = ->(state, actions) {
         eval RubyWasmVdom::DomParser.parse(<<-DOM)
           <div>
             <h2>ルール</h2>
+            <button class="changeLangButton" onclick='{->(e) { actions[:changeLang].call(0, 0) } }'>Change To English</button>
             <ul>
               <li>これから問題が 5 問出題されます。</li>
               <li>1 つの問題には 4 つの選択肢があり、正解は 1 つです。</li>
@@ -228,10 +342,50 @@
         # actions 内で引数の数を 2 つにしないとバグるので無理やり2つ設定する
         start: ->(_a, _b) {
           showQuestionView(state)
+        },
+        changeLang: ->(_a, _b) {
+          state[:questions] = ENGLISH_QUESTIONS.shuffle[0..][0..5]
+          showInitialViewEnglish(state)
         }
       }
 
       renderApp(state: state, view: initialView, actions: actions)
+    end
+
+    def showInitialViewEnglish(state)
+      # 英語用初期表示 View
+      initialViewEnglish = ->(state, actions) {
+        eval RubyWasmVdom::DomParser.parse(<<-DOM)
+          <div>
+            <h2>Rule</h2>
+            <button class="changeLangButton" onclick='{->(e) { actions[:changeLang].call(0, 0) } }'>日本語に変える</button>
+            <ul>
+              <li>There will now be 5 questions.</li>
+              <li>Each question has four choices, with one correct answer.</li>
+              <li>Once you select an answer, the correct or incorrect answer is displayed and you move on to the next question.</li>
+              <li>After 5 questions are answered, the results screen will appear, showing the number of correct answers and an explanation for each question.</li>
+              <li>Answer more questions correctly to win novelties!</li>
+            </ul>
+
+            <div class="startResetButtonArea">
+              <button class="startResetButton" onclick='{->(e) { actions[:start].call(0, 0) } }'>Start!</button>
+            </div>
+          </div>
+        DOM
+      }
+
+      actions = {
+        # actions 内で引数の数を 2 つにしないとバグるので無理やり2つ設定する
+        start: ->(_a, _b) {
+          showQuestionViewEnglish(state)
+        },
+        changeLang: ->(_a, _b) {
+          state[:questions] = QUESTIONS.shuffle[0..][0..5]
+          showInitialView(state)
+        }
+      }
+
+      renderApp(state: state, view: initialViewEnglish, actions: actions)
     end
 
     def initialize
