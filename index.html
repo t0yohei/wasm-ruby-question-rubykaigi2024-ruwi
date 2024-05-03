@@ -70,6 +70,14 @@
       flex-direction: column;
       align-items: center;
     }
+
+    .questionResult {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 80vh;
+      font-size: 48px;
+    }
   </style>
 </head>
 <body>
@@ -228,6 +236,30 @@
       renderApp(state: state, view: resultViewEnglish, actions: actions)
     end
 
+    def showQuestionResultView(state)
+      # 回答結果画面用の View
+      questionResultView = ->(state, actions) {
+        eval RubyWasmVdom::DomParser.parse(<<-DOM)
+          <div class="questionResult">
+            {"#{state[:lastQuestionResult]}"}
+          </div>
+        DOM
+      }
+
+      renderApp(state: state, view: questionResultView, actions: {})
+
+      renderNextView = lambda {
+        if state[:questionIndex] == 5
+          showResultView(state)
+        else
+          showQuestionView(state)
+        end
+      }
+
+      # 次の問題画面 or 結果画面を 1 秒後に表示する
+      JS.global.call(:setTimeout, JS.try_convert(renderNextView), 1000)
+    end
+
     def showQuestionView(state)
       # 問題 View
       questionView = ->(state, actions) {
@@ -243,8 +275,6 @@
               <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
               <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
             </div>
-
-            <p>{"前の問題の結果は: #{state[:lastQuestionResult]}"}</p>
           </div>
         DOM
       }
@@ -252,15 +282,14 @@
       actions = {
         selectChoice: ->(question, choiceIndex) {
           state[:questionIndex] += 1
+
           if question[:answerIndex] == choiceIndex
             state[:correctAnswerCount] += 1
             state[:lastQuestionResult] = '正解 :)'
+            showQuestionResultView(state)
           else
             state[:lastQuestionResult] = '不正解 :('
-          end
-
-          if state[:questionIndex] == 5
-            showResultView(state)
+            showQuestionResultView(state)
           end
 
           # タイマーのリセット
