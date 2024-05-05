@@ -89,199 +89,204 @@
   <script type="text/ruby">
     require "js"
 
-    def renderApp(state:, view:, actions:)
-      appEl = JS.global[:document].getElementById('app');
-      children = appEl[:children]
-
-      # 既存の view があれば非表示にする。
-      if children[:length].to_i > 0
-        children[0].remove()
+    class Main
+      def initialize
+        @state = {
+          questions: QUESTIONS.shuffle[0..][0..5],
+          questionIndex: 0,
+          correctAnswerCount: 0,
+          lastQuestionResult: '',
+          lang: 'ja',
+          text: I18N[:ja],
+        }
       end
 
-      render = lambda {
-        RubyWasmVdom::App.new(
-          el: "#app",
-          state:,
-          view:,
-          actions:
-        )
-      }
+      attr_reader :state
 
-      # すぐに描画するとエラーになるので、少し待ってから描画する
-      JS.global.call(:setTimeout, JS.try_convert(render))
-    end
+      def showInitialView
+        # 初期表示 View
+        initialView = ->(state, actions) {
+          eval RubyWasmVdom::DomParser.parse(<<-DOM)
+            <div>
+              <h2>{state[:text][:initial_view][:title]}</h2>
+              <button class="changeLangButton" onclick='{->(e) { actions[:changeLang].call(0, 0) } }'>{state[:text][:initial_view][:change_lang]}</button>
+              <ul>
+                <li>{state[:text][:initial_view][:description_one]}</li>
+                <li>{state[:text][:initial_view][:description_two]}</li>
+                <li>{state[:text][:initial_view][:description_three]}</li>
+                <li>{state[:text][:initial_view][:description_four]}</li>
+                <li>{state[:text][:initial_view][:description_five]}</li>
+              </ul>
 
-    def showResultView(state)
-      # 結果画面用の View
-      resultView = ->(state, actions) {
-        eval RubyWasmVdom::DomParser.parse(<<-DOM)
-          <div>
-            <h2>{state[:text][:result_view][:title]}</h2>
-            <div class="resultArea">
-              <p>{state[:text][:result_view][:detail].call(state[:correctAnswerCount])}</p>
-              <div class="techBlogLink">
-                <img src="qrcode.png" alt="{state[:text][:result_view][:blog_alt]}" width="100" height="100">
-                {state[:text][:result_view][:blog]}
+              <div class="startResetButtonArea">
+                <button class="startResetButton" onclick='{->(e) { actions[:start].call(0, 0) } }'>{state[:text][:initial_view][:start]}</button>
               </div>
             </div>
-
-            <h2>{state[:text][:explanation]}</h2>
-
-            <p>{"#{state[:text][:question]} 1: #{state[:questions][0][:description]}"}</p>
-            <p>{"#{state[:text][:explanation]}: #{state[:questions][0][:explanation]}"}</p>
-            <br/>
-            <p>{"#{state[:text][:question]} 2: #{state[:questions][1][:description]}"}</p>
-            <p>{"#{state[:text][:explanation]}: #{state[:questions][1][:explanation]}"}</p>
-            <br/>
-            <p>{"#{state[:text][:question]} 3: #{state[:questions][2][:description]}"}</p>
-            <p>{"#{state[:text][:explanation]}: #{state[:questions][2][:explanation]}"}</p>
-            <br/>
-            <p>{"#{state[:text][:question]} 4: #{state[:questions][3][:description]}"}</p>
-            <p>{"#{state[:text][:explanation]}: #{state[:questions][3][:explanation]}"}</p>
-            <br/>
-            <p>{"#{state[:text][:question]} 5: #{state[:questions][4][:description]}"}</p>
-            <p>{"#{state[:text][:explanation]}: #{state[:questions][4][:explanation]}"}</p>
-
-            <div class="startResetButtonArea">
-              <button class="startResetButton" onclick='{->(e) { actions[:reset].call(0, 0) } }'>{state[:text][:result_view][:reset]}</button>
-            </div>
-          </div>
-        DOM
-      }
-
-      actions = {
-        # actions 内で引数の数を 2 つにしないとバグるので無理やり2つ設定する
-        reset: ->(_a, _b) {
-          JS.global[:window][:location].reload();
+          DOM
         }
-      }
 
-      renderApp(state: state, view: resultView, actions: actions)
-    end
+        actions = {
+          # actions 内で引数の数を 2 つにしないとバグるので無理やり2つ設定する
+          start: ->(_a, _b) {
+            showQuestionView()
+          },
+          changeLang: ->(_a, _b) {
+            if state[:lang] == 'ja'
+              state[:lang] = 'en'
+              state[:questions] = ENGLISH_QUESTIONS.shuffle[0..][0..5]
+              state[:text] = I18N[:en]
+            else
+              state[:lang] = 'ja'
+              state[:questions] = QUESTIONS.shuffle[0..][0..5]
+              state[:text] = I18N[:ja]
+            end
+            showInitialView()
+          }
+        }
 
-    def showQuestionResultView(state)
-      # 回答結果画面用の View
-      questionResultView = ->(state, actions) {
-        eval RubyWasmVdom::DomParser.parse(<<-DOM)
-          <div class="questionResult">
-            {"#{state[:lastQuestionResult]}"}
-          </div>
-        DOM
-      }
+        renderApp(state: state, view: initialView, actions: actions)
+      end
 
-      renderApp(state: state, view: questionResultView, actions: {})
+      private
 
-      renderNextView = lambda {
-        if state[:questionIndex] == 5
-          showResultView(state)
-        else
-          showQuestionView(state)
+      def renderApp(state:, view:, actions:)
+        appEl = JS.global[:document].getElementById('app');
+        children = appEl[:children]
+
+        # 既存の view があれば非表示にする。
+        if children[:length].to_i > 0
+          children[0].remove()
         end
-      }
 
-      # 次の問題画面 or 結果画面を 1 秒後に表示する
-      JS.global.call(:setTimeout, JS.try_convert(renderNextView), 1000)
-    end
-
-    def showQuestionView(state)
-      # 問題 View
-      questionView = ->(state, actions) {
-        eval RubyWasmVdom::DomParser.parse(<<-DOM)
-          <div>
-            <h2>{"#{state[:text][:question]} #{state[:questions].index(state[:questions][state[:questionIndex]]) + 1}: #{state[:questions][state[:questionIndex]][:description]}"}</h2>
-
-            <div class="timer" id="timer">30</div>
-
-            <div class="questionButtons">
-              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
-              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
-              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
-              <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
-            </div>
-          </div>
-        DOM
-      }
-
-      actions = {
-        selectChoice: ->(question, choiceIndex) {
-          state[:questionIndex] += 1
-
-          if question[:answerIndex] == choiceIndex
-            state[:correctAnswerCount] += 1
-            state[:lastQuestionResult] = "#{state[:text][:collect]} :)"
-            showQuestionResultView(state)
-          else
-            state[:lastQuestionResult] = "#{state[:text][:incorrect]} :("
-            showQuestionResultView(state)
-          end
-
-          # タイマーのリセット
-          timerEl = JS.global[:document].getElementById('timer')
-          timerEl[:textContent] = 30
-        },
-      }
-
-      renderApp(state: state, view: questionView, actions: actions)
-    end
-
-    def showInitialView(state)
-      # 初期表示 View
-      initialView = ->(state, actions) {
-        eval RubyWasmVdom::DomParser.parse(<<-DOM)
-          <div>
-            <h2>{state[:text][:initial_view][:title]}</h2>
-            <button class="changeLangButton" onclick='{->(e) { actions[:changeLang].call(0, 0) } }'>{state[:text][:initial_view][:change_lang]}</button>
-            <ul>
-              <li>{state[:text][:initial_view][:description_one]}</li>
-              <li>{state[:text][:initial_view][:description_two]}</li>
-              <li>{state[:text][:initial_view][:description_three]}</li>
-              <li>{state[:text][:initial_view][:description_four]}</li>
-              <li>{state[:text][:initial_view][:description_five]}</li>
-            </ul>
-
-            <div class="startResetButtonArea">
-              <button class="startResetButton" onclick='{->(e) { actions[:start].call(0, 0) } }'>{state[:text][:initial_view][:start]}</button>
-            </div>
-          </div>
-        DOM
-      }
-
-      actions = {
-        # actions 内で引数の数を 2 つにしないとバグるので無理やり2つ設定する
-        start: ->(_a, _b) {
-          showQuestionView(state)
-        },
-        changeLang: ->(_a, _b) {
-          if state[:lang] == 'ja'
-            state[:lang] = 'en'
-            state[:questions] = ENGLISH_QUESTIONS.shuffle[0..][0..5]
-            state[:text] = I18N[:en]
-          else
-            state[:lang] = 'ja'
-            state[:questions] = QUESTIONS.shuffle[0..][0..5]
-            state[:text] = I18N[:ja]
-          end
-          showInitialView(state)
+        render = lambda {
+          RubyWasmVdom::App.new(
+            el: "#app",
+            state:,
+            view:,
+            actions:
+          )
         }
-      }
 
-      renderApp(state: state, view: initialView, actions: actions)
+        # すぐに描画するとエラーになるので、少し待ってから描画する
+        JS.global.call(:setTimeout, JS.try_convert(render))
+      end
+
+      def showQuestionView
+        # 問題 View
+        questionView = ->(state, actions) {
+          eval RubyWasmVdom::DomParser.parse(<<-DOM)
+            <div>
+              <h2>{"#{state[:text][:question]} #{state[:questions].index(state[:questions][state[:questionIndex]]) + 1}: #{state[:questions][state[:questionIndex]][:description]}"}</h2>
+
+              <div class="timer" id="timer">30</div>
+
+              <div class="questionButtons">
+                <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
+                <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
+                <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
+                <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
+              </div>
+            </div>
+          DOM
+        }
+
+        actions = {
+          selectChoice: ->(question, choiceIndex) {
+            state[:questionIndex] += 1
+
+            if question[:answerIndex] == choiceIndex
+              state[:correctAnswerCount] += 1
+              state[:lastQuestionResult] = "#{state[:text][:collect]} :)"
+              showQuestionResultView
+            else
+              state[:lastQuestionResult] = "#{state[:text][:incorrect]} :("
+              showQuestionResultView
+            end
+
+            # タイマーのリセット
+            timerEl = JS.global[:document].getElementById('timer')
+            timerEl[:textContent] = 30
+          },
+        }
+
+        renderApp(state: state, view: questionView, actions: actions)
+      end
+
+      def showResultView
+        # 結果画面用の View
+        resultView = ->(state, actions) {
+          eval RubyWasmVdom::DomParser.parse(<<-DOM)
+            <div>
+              <h2>{state[:text][:result_view][:title]}</h2>
+              <div class="resultArea">
+                <p>{state[:text][:result_view][:detail].call(state[:correctAnswerCount])}</p>
+                <div class="techBlogLink">
+                  <img src="qrcode.png" alt="{state[:text][:result_view][:blog_alt]}" width="100" height="100">
+                  {state[:text][:result_view][:blog]}
+                </div>
+              </div>
+
+              <h2>{state[:text][:explanation]}</h2>
+
+              <p>{"#{state[:text][:question]} 1: #{state[:questions][0][:description]}"}</p>
+              <p>{"#{state[:text][:explanation]}: #{state[:questions][0][:explanation]}"}</p>
+              <br/>
+              <p>{"#{state[:text][:question]} 2: #{state[:questions][1][:description]}"}</p>
+              <p>{"#{state[:text][:explanation]}: #{state[:questions][1][:explanation]}"}</p>
+              <br/>
+              <p>{"#{state[:text][:question]} 3: #{state[:questions][2][:description]}"}</p>
+              <p>{"#{state[:text][:explanation]}: #{state[:questions][2][:explanation]}"}</p>
+              <br/>
+              <p>{"#{state[:text][:question]} 4: #{state[:questions][3][:description]}"}</p>
+              <p>{"#{state[:text][:explanation]}: #{state[:questions][3][:explanation]}"}</p>
+              <br/>
+              <p>{"#{state[:text][:question]} 5: #{state[:questions][4][:description]}"}</p>
+              <p>{"#{state[:text][:explanation]}: #{state[:questions][4][:explanation]}"}</p>
+
+              <div class="startResetButtonArea">
+                <button class="startResetButton" onclick='{->(e) { actions[:reset].call(0, 0) } }'>{state[:text][:result_view][:reset]}</button>
+              </div>
+            </div>
+          DOM
+        }
+
+        actions = {
+          # actions 内で引数の数を 2 つにしないとバグるので無理やり2つ設定する
+          reset: ->(_a, _b) {
+            JS.global[:window][:location].reload();
+          }
+        }
+
+        renderApp(state: state, view: resultView, actions: actions)
+      end
+
+      def showQuestionResultView
+        # 回答結果画面用の View
+        questionResultView = ->(state, actions) {
+          eval RubyWasmVdom::DomParser.parse(<<-DOM)
+            <div class="questionResult">
+              {"#{state[:lastQuestionResult]}"}
+            </div>
+          DOM
+        }
+
+        renderApp(state: state, view: questionResultView, actions: {})
+
+        renderNextView = lambda {
+          if state[:questionIndex] == 5
+            showResultView()
+          else
+            showQuestionView()
+          end
+        }
+
+        # 次の問題画面 or 結果画面を 1 秒後に表示する
+        JS.global.call(:setTimeout, JS.try_convert(renderNextView), 1000)
+      end
     end
 
-    def initialize
-      state = {
-        questions: QUESTIONS.shuffle[0..][0..5],
-        questionIndex: 0,
-        correctAnswerCount: 0,
-        lastQuestionResult: '',
-        lang: 'ja',
-        text: I18N[:ja],
-      }
-
-      showInitialView(state)
-    end
-
-    initialize()
+    main = Main.new
+    main.showInitialView()
   </script>
 
   <script>
