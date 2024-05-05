@@ -5,6 +5,8 @@
   <title>RubyQuize 2024</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <script type="module" src="https://getty104.github.io/ruby-wasm-vdom/index.js"></script>
+  <script type="text/ruby" src='i18n.rb'></script>
+  <script type="text/ruby" src='questions.rb'></script>
 
   <style>
     * {
@@ -85,100 +87,7 @@
   <div id="app"></div>
 
   <script type="text/ruby">
-    # 要件
-    # 25 件の問題から 5 つをランダムで選んで出題
-    # 1 つの問題には 4 つの選択肢があり、正解は一つ
-    # 回答を選択すると、正解・不正解が表示されて次の問題に移る
-    # 5 問解答が終わると結果画面が表示されて、正答数と各問題の解説が表示される
-    # reset を実行すると、最初に戻る
     require "js"
-
-    puts RUBY_VERSION
-
-    QUESTIONS = [
-      { description: 'RubyKaigi 2023 の開催地は?', choices: ['長野県松本市', '三重県津市', '福岡県福岡市', '宮城県仙台市'], answerIndex: 0, explanation: 'RubyKaigi 2023 は長野県松本市で開催されました。' },
-      { description: 'RubyKaigi 2022 の開催地は?', choices: ['長野県松本市', '三重県津市', '京都府京都市', '広島県広島市'], answerIndex: 1, explanation: 'RubyKaigi 2023 は三重県津市で開催されました。' },
-      { description: 'RubyKaigi 2019 の開催地は?', choices: ['広島県広島市', '三重県津市', '福岡県福岡市', '京都府京都市'], answerIndex: 2, explanation: 'RubyKaigi 2023 は福岡県福岡市で開催されました。' },
-      { description: 'RubyKaigi 2018 の開催地は?', choices: ['長野県松本市', '京都府京都市', '三重県津市', '宮城県仙台市'], answerIndex: 3, explanation: 'RubyKaigi 2023 は宮城県仙台市で開催されました。' },
-      { description: 'RubyKaigi 2017 の開催地は?', choices: ['広島県広島市', '三重県津市', '京都府京都市', '宮城県仙台市'], answerIndex: 0, explanation: 'RubyKaigi 2023 は広島県広島市で開催されました。' },
-      { description: 'RubyKaigi 2016 の開催地は?', choices: ['長野県松本市', '京都府京都市', '広島県広島市', '宮城県仙台市'], answerIndex: 1, explanation: 'RubyKaigi 2023 は京都府京都市で開催されました。' },
-      { description: 'Ruby のインスタンス変数の接頭子 (記号) は?', choices: ['@@', '@', '$', '~'], answerIndex: 1, explanation: 'Ruby ではインスタンス変数の接頭子 (記号) として @ を使用します。' },
-      { description: 'Ruby のクラス変数の接頭子 (記号) は?', choices: ['$', '@', '@@', '~'], answerIndex: 2, explanation: 'Ruby ではのクラス変数の接頭子 (記号) として @@ を使用します。' },
-      { description: 'Ruby のグローバル変数の接頭子 (記号) は?', choices: ['$', '@@', '@', '~'], answerIndex: 0, explanation: 'Ruby ではグローバル変数の接頭子 (記号) として $ を使用します。' },
-    ]
-
-    # TODO 翻訳
-    ENGLISH_QUESTIONS = [
-      { description: '(en)RubyKaigi 2023 の開催地は?', choices: ['長野県松本市', '三重県津市', '福岡県福岡市', '宮城県仙台市'], answerIndex: 0, explanation: 'RubyKaigi 2023 は長野県松本市で開催されました。' },
-      { description: '(en)RubyKaigi 2022 の開催地は?', choices: ['長野県松本市', '三重県津市', '京都府京都市', '広島県広島市'], answerIndex: 1, explanation: 'RubyKaigi 2023 は三重県津市で開催されました。' },
-      { description: '(en)RubyKaigi 2019 の開催地は?', choices: ['広島県広島市', '三重県津市', '福岡県福岡市', '京都府京都市'], answerIndex: 2, explanation: 'RubyKaigi 2023 は福岡県福岡市で開催されました。' },
-      { description: '(en)RubyKaigi 2018 の開催地は?', choices: ['長野県松本市', '京都府京都市', '三重県津市', '宮城県仙台市'], answerIndex: 3, explanation: 'RubyKaigi 2023 は宮城県仙台市で開催されました。' },
-      { description: '(en)RubyKaigi 2017 の開催地は?', choices: ['広島県広島市', '三重県津市', '京都府京都市', '宮城県仙台市'], answerIndex: 0, explanation: 'RubyKaigi 2023 は広島県広島市で開催されました。' },
-      { description: '(en)RubyKaigi 2016 の開催地は?', choices: ['長野県松本市', '京都府京都市', '広島県広島市', '宮城県仙台市'], answerIndex: 1, explanation: 'RubyKaigi 2023 は京都府京都市で開催されました。' },
-      { description: '(en)Ruby のインスタンス変数の接頭子 (記号) は?', choices: ['@@', '@', '$', '~'], answerIndex: 1, explanation: 'Ruby ではインスタンス変数の接頭子 (記号) として @ を使用します。' },
-      { description: '(en)Ruby のクラス変数の接頭子 (記号) は?', choices: ['$', '@', '@@', '~'], answerIndex: 2, explanation: 'Ruby ではのクラス変数の接頭子 (記号) として @@ を使用します。' },
-      { description: '(en)Ruby のグローバル変数の接頭子 (記号) は?', choices: ['$', '@@', '@', '~'], answerIndex: 0, explanation: 'Ruby ではグローバル変数の接頭子 (記号) として $ を使用します。' },
-    ]
-
-    I18N = {
-      ja: {
-        question: '問題',
-        explanation: '解説',
-        collect: '正解',
-        incorrect: '不正解',
-        initial_view: {
-          title: 'ルール',
-          description_one: 'これから問題が 5 問出題されます。',
-          description_two: '1 つの問題には 4 つの選択肢があり、正解は 1 つです。',
-          description_three: '回答を選択すると、正解・不正解が表示されて次の問題に移ります。',
-          description_four: '5 問解答が終わると結果画面が表示されて、正答数と各問題の解説が表示されます。',
-          description_five: 'より多くの問題に正解して、ノベルティを獲得しましょう！',
-          start: 'スタート！',
-          change_lang: 'Change To English',
-        },
-        question_view: {
-          title: 'ルール',
-          description_one: 'これから問題が 5 問出題されます。',
-          description_two: '1 つの問題には 4 つの選択肢があり、正解は 1 つです。',
-          description_three: '回答を選択すると、正解・不正解が表示されて次の問題に移ります。',
-          description_four: '5 問解答が終わると結果画面が表示されて、正答数と各問題の解説が表示されます。',
-          description_five: 'より多くの問題に正解して、ノベルティを獲得しましょう！',
-          start: 'スタート！',
-          change_lang: 'Change To English',
-        },
-        result_view: {
-          title: '結果',
-          detail: ->(num) { "5 問中 #{num} 問正解！" },
-          detail_two: '問正解！',
-          blog: 'テックブログにてこのアプリの解説を公開中！',
-          blog_alt: 'テックブログページへのQRコード',
-          reset: 'リセット',
-        }
-      },
-      en: {
-        question: 'Question',
-        explanation: 'Explanation',
-        collect: 'Collect',
-        incorrect: 'Incorrect',
-        initial_view: {
-          title: 'Rule',
-          description_one: 'There will now be 5 questions.',
-          description_two: 'Each question has four choices, with one correct answer.',
-          description_three: 'Once you select an answer, the correct or incorrect answer is displayed and you move on to the next question.',
-          description_four: 'After 5 questions are answered, the results screen will appear, showing the number of correct answers and an explanation for each question.',
-          description_five: 'Answer more questions correctly to win novelties!',
-          start: 'Start!',
-          change_lang: '日本語に変える',
-        },
-        result_view: {
-          title: 'Result',
-          detail: ->(num) { "#{num} of 5 questions answered correctly!" },
-          blog: 'A description of this application is available on the Tech Blog(only Japanese).',
-          blog_alt: 'QR Code to Tech Blog Page',
-          reset: 'Reset',
-        }
-      }
-    }
 
     def renderApp(state:, view:, actions:)
       appEl = JS.global[:document].getElementById('app');
@@ -271,7 +180,7 @@
       }
 
       # 次の問題画面 or 結果画面を 1 秒後に表示する
-      JS.global.call(:setTimeout, JS.try_convert(renderNextView), 100)
+      JS.global.call(:setTimeout, JS.try_convert(renderNextView), 1000)
     end
 
     def showQuestionView(state)
