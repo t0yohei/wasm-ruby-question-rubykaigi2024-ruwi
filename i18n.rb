@@ -2,8 +2,6 @@ I18N = {
   ja: {
     question: '問題',
     explanation: '解説',
-    collect: '正解',
-    incorrect: '不正解',
     initial_view: {
       title: 'ルール',
       description_one: 'これから問題が 5 問出題されます。',
@@ -24,9 +22,13 @@ I18N = {
       start: 'スタート！',
       change_lang: 'Change To English',
     },
+    question_result_view: {
+      correct: '正解 🎉',
+      incorrect: '不正解 😢',
+    },
     result_view: {
       title: '結果',
-      detail: ->(num) { "5 問中 #{num} 問正解！" },
+      detail: ->(num) { "5 問中 #{num} 問正解！ 🎉" },
       detail_two: '問正解！',
       blog: 'テックブログにて、このアプリの解説を公開中！',
       blog_alt: 'テックブログページへのQRコード',
@@ -36,8 +38,6 @@ I18N = {
   en: {
     question: 'Question',
     explanation: 'Explanation',
-    collect: 'Collect',
-    incorrect: 'Incorrect',
     initial_view: {
       title: 'Rule',
       description_one: 'There will now be 5 questions.',
@@ -48,9 +48,13 @@ I18N = {
       start: 'Start!',
       change_lang: '日本語に変える',
     },
+    question_result_view: {
+      correct: 'Correct 🎉',
+      incorrect: 'Incorrect 😢',
+    },
     result_view: {
       title: 'Result',
-      detail: ->(num) { "#{num} of 5 questions answered correctly!" },
+      detail: ->(num) { "#{num} of 5 questions answered correctly! 🎉" },
       blog: 'A description of this application is available on the Tech Blog.',
       blog_alt: 'QR Code to Tech Blog Page',
       reset: 'Reset',
