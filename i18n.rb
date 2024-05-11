@@ -2,7 +2,7 @@ I18N = {
   ja: {
     question: '問題',
     explanation: '解説',
-    collect: '正解',
+    correct: '正解',
     incorrect: '不正解',
     initial_view: {
       title: 'ルール',
@@ -36,7 +36,7 @@ I18N = {
   en: {
     question: 'Question',
     explanation: 'Explanation',
-    collect: 'Collect',
+    correct: 'Correct',
     incorrect: 'Incorrect',
     initial_view: {
       title: 'Rule',

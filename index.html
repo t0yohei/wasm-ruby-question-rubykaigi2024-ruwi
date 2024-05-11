@@ -108,6 +108,14 @@
       margin: 100px 0;
     }
 
+    .correct {
+      color: var(--color-success)
+    }
+
+    .incorrect {
+      color: var(--color-danger)
+    }
+
     .resultArea {
       display: flex;
       align-items: center;
@@ -154,8 +162,6 @@
       border-radius: 4px;
       background-color: var(--color-gray-light);
     }
-
-
   </style>
 </head>
 <body>
@@ -274,10 +280,10 @@
 
             if question[:answerIndex] == choiceIndex
               state[:correctAnswerCount] += 1
-              state[:lastQuestionResult] = "#{state[:text][:collect]} :)"
+              state[:lastQuestionResult] = 'correct'
               showQuestionResultView
             else
-              state[:lastQuestionResult] = "#{state[:text][:incorrect]} :("
+              state[:lastQuestionResult] = 'incorrect'
               showQuestionResultView
             end
 
@@ -288,6 +294,30 @@
         }
 
         renderApp(state: state, view: questionView, actions: actions)
+      end
+
+      def showQuestionResultView
+        # 回答結果画面用の View
+        questionResultView = ->(state, actions) {
+          eval RubyWasmVdom::DomParser.parse(<<-DOM)
+            <div class="questionResult #{state[:lastQuestionResult]}">
+              {state[:text][state[:lastQuestionResult].to_sym]}
+            </div>
+          DOM
+        }
+
+        renderApp(state: state, view: questionResultView, actions: {})
+
+        renderNextView = lambda {
+          if state[:questionIndex] == 5
+            showResultView()
+          else
+            showQuestionView()
+          end
+        }
+
+        # 次の問題画面 or 結果画面を 1 秒後に表示する
+        JS.global.call(:setTimeout, JS.try_convert(renderNextView), 1000)
       end
 
       def showResultView
@@ -338,30 +368,6 @@
         }
 
         renderApp(state: state, view: resultView, actions: actions)
-      end
-
-      def showQuestionResultView
-        # 回答結果画面用の View
-        questionResultView = ->(state, actions) {
-          eval RubyWasmVdom::DomParser.parse(<<-DOM)
-            <div class="questionResult">
-              {"#{state[:lastQuestionResult]}"}
-            </div>
-          DOM
-        }
-
-        renderApp(state: state, view: questionResultView, actions: {})
-
-        renderNextView = lambda {
-          if state[:questionIndex] == 5
-            showResultView()
-          else
-            showQuestionView()
-          end
-        }
-
-        # 次の問題画面 or 結果画面を 1 秒後に表示する
-        JS.global.call(:setTimeout, JS.try_convert(renderNextView), 1000)
       end
     end
 
