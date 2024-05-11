@@ -28,7 +28,7 @@ I18N = {
       title: '結果',
       detail: ->(num) { "5 問中 #{num} 問正解！" },
       detail_two: '問正解！',
-      blog: 'テックブログにてこのアプリの解説を公開中！',
+      blog: 'テックブログにて、このアプリの解説を公開中！',
       blog_alt: 'テックブログページへのQRコード',
       reset: 'リセット',
     }
@@ -51,7 +51,7 @@ I18N = {
     result_view: {
       title: 'Result',
       detail: ->(num) { "#{num} of 5 questions answered correctly!" },
-      blog: 'A description of this application is available on the Tech Blog(only Japanese).',
+      blog: 'A description of this application is available on the Tech Blog.',
       blog_alt: 'QR Code to Tech Blog Page',
       reset: 'Reset',
     }

@@ -2,34 +2,73 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <title>Ruby Quize at RubyKaigi 2024</title>
+  <title>Ruby Quize 2024 by CrowdWorks</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <script type="module" src="https://getty104.github.io/ruby-wasm-vdom/index.js"></script>
   <script type="text/ruby" src='i18n.rb'></script>
   <script type="text/ruby" src='questions.rb'></script>
 
   <style>
+    :root {
+      /* Color */
+      --color-primary: #0068b6;
+      --color-primary-dark: #004a97;
+      --color-blue-light: #e7f1fa;
+      --color-success: #177835;
+      --color-danger:  #c92b36;
+      --color-gray: #617084;
+      --color-gray-light: #ecedf0;
+      --color-black: #353d48;
+      --color-white: rgb(255 255 255 / 100%);
+      --color-black-5: rgb(0 0 0 / 5%);
+    }
+
     * {
       box-sizing: border-box;
     }
 
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Hiragino Kaku Gothic Pro', sans-serif;
+      color: var(--color-black);
+      background-color: var(--color-blue-light);
+      width: 80vw;
+      margin-right: auto;
+      margin-left: auto;
     }
 
-    .changeLangButton {
+    .appArea {
+      background-color: var(--color-white);
+      height: 85vh;
+      padding: 24px;
+      border-radius: 8px;
+    }
+
+    .officialOgp {
+      width: auto;
+      height: 40vh;
+      display: flex;
+      margin: 24px auto;
+    }
+
+    .button {
       margin: 0;
       padding: 0 16px;
       height: 40px;
-      font-size: 16px;
       cursor: pointer;
-      float: right;
+      border-radius: 4px;
     }
 
-    .timer {
-      font-size: 80px;
-      text-align: center;
-      margin: 100px 0;
+    .button:hover,
+    .button:focus {
+      background-image: linear-gradient(var(--color-black-5), var(--color-black-5));
+      background-blend-mode: multiply;
+    }
+
+    .changeLangButton {
+      font-size: 16px;
+      float: right;
+      background-color: var(--color-white);
+      border: 1px solid var(--color-gray);
     }
 
     .questionButtons {
@@ -40,11 +79,11 @@
     }
 
     .questionButton {
-      margin: 0;
-      padding: 0 16px;
-      height: 48px;
-      font-size: 18px;
-      cursor: pointer;
+      height: 56px;
+      font-size: 22px;
+      width: 100%;
+      background-color: var(--color-white);
+      border: 1px solid var(--color-gray);
     }
 
     .startResetButtonArea {
@@ -53,24 +92,50 @@
     }
 
     .startResetButton {
-      margin: 0;
-      padding: 0 16px;
-      height: 60px;
+      height: 56px;
       font-size: 22px;
-      width: 40vw;
-      cursor: pointer;
+      width: 100%;
+      background-color: var(--color-primary);
+      color: var(--color-white);
+      border: 0;
+      max-width: 500px;
+      font-weight: bold;
+    }
+
+    .timer {
+      font-size: 80px;
+      text-align: center;
+      margin: 100px 0;
     }
 
     .resultArea {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      padding: 0 40px;
+      position: relative;
+      height: 10vh;
+    }
+
+    .resultText {
+      text-align: center;
+      width: 100%;
+      font-size: 32px;
+      font-weight: bold;
     }
 
     .techBlogLink {
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+    .blogText {
+      width: 300px;
+      text-align: center;
+      word-break: keep-all;
     }
 
     .questionResult {
@@ -80,11 +145,22 @@
       height: 80vh;
       font-size: 48px;
     }
+
+    .explanationArea {
+      padding: 0 40px;
+      overflow: scroll;
+      height: 40vh;
+      border: 1px solid var(--color-gray);
+      border-radius: 4px;
+      background-color: var(--color-gray-light);
+    }
+
+
   </style>
 </head>
 <body>
-  <h1>RubyQuize 2024</h1>
-  <div id="app"></div>
+  <h1>Ruby Quize 2024 by CrowdWorks</h1>
+  <div id="app" class="appArea"></div>
 
   <script type="text/ruby">
     require "js"
@@ -109,7 +185,7 @@
           eval RubyWasmVdom::DomParser.parse(<<-DOM)
             <div>
               <h2>{state[:text][:initial_view][:title]}</h2>
-              <button class="changeLangButton" onclick='{->(e) { actions[:changeLang].call(0, 0) } }'>{state[:text][:initial_view][:change_lang]}</button>
+              <button class="changeLangButton button" onclick='{->(e) { actions[:changeLang].call(0, 0) } }'>{state[:text][:initial_view][:change_lang]}</button>
               <ul>
                 <li>{state[:text][:initial_view][:description_one]}</li>
                 <li>{state[:text][:initial_view][:description_two]}</li>
@@ -118,8 +194,10 @@
                 <li>{state[:text][:initial_view][:description_five]}</li>
               </ul>
 
+              <img class="officialOgp" src="official_ogp.png" alt="official ogp image" >
+
               <div class="startResetButtonArea">
-                <button class="startResetButton" onclick='{->(e) { actions[:start].call(0, 0) } }'>{state[:text][:initial_view][:start]}</button>
+                <button class="startResetButton button" onclick='{->(e) { actions[:start].call(0, 0) } }'>{state[:text][:initial_view][:start]}</button>
               </div>
             </div>
           DOM
@@ -181,10 +259,10 @@
               <div class="timer" id="timer">30</div>
 
               <div class="questionButtons">
-                <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
-                <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
-                <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
-                <button class="questionButton" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
+                <button class="questionButton button" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
+                <button class="questionButton button" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
+                <button class="questionButton button" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
+                <button class="questionButton button" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
               </div>
             </div>
           DOM
@@ -219,32 +297,34 @@
             <div>
               <h2>{state[:text][:result_view][:title]}</h2>
               <div class="resultArea">
-                <p>{state[:text][:result_view][:detail].call(state[:correctAnswerCount])}</p>
+                <p class="resultText">{state[:text][:result_view][:detail].call(state[:correctAnswerCount])}</p>
                 <div class="techBlogLink">
                   <img src="qrcode.png" alt="{state[:text][:result_view][:blog_alt]}" width="100" height="100">
-                  {state[:text][:result_view][:blog]}
+                  <span class="blogText">{state[:text][:result_view][:blog]}</span>
                 </div>
               </div>
 
               <h2>{state[:text][:explanation]}</h2>
 
-              <p>{"#{state[:text][:question]} 1: #{state[:questions][0][:description]}"}</p>
-              <p>{"#{state[:text][:explanation]}: #{state[:questions][0][:explanation]}"}</p>
-              <br/>
-              <p>{"#{state[:text][:question]} 2: #{state[:questions][1][:description]}"}</p>
-              <p>{"#{state[:text][:explanation]}: #{state[:questions][1][:explanation]}"}</p>
-              <br/>
-              <p>{"#{state[:text][:question]} 3: #{state[:questions][2][:description]}"}</p>
-              <p>{"#{state[:text][:explanation]}: #{state[:questions][2][:explanation]}"}</p>
-              <br/>
-              <p>{"#{state[:text][:question]} 4: #{state[:questions][3][:description]}"}</p>
-              <p>{"#{state[:text][:explanation]}: #{state[:questions][3][:explanation]}"}</p>
-              <br/>
-              <p>{"#{state[:text][:question]} 5: #{state[:questions][4][:description]}"}</p>
-              <p>{"#{state[:text][:explanation]}: #{state[:questions][4][:explanation]}"}</p>
+              <div class="explanationArea">
+                <p>{"#{state[:text][:question]} 1: #{state[:questions][0][:description]}"}</p>
+                <p>{"#{state[:text][:explanation]}: #{state[:questions][0][:explanation]}"}</p>
+                <br/>
+                <p>{"#{state[:text][:question]} 2: #{state[:questions][1][:description]}"}</p>
+                <p>{"#{state[:text][:explanation]}: #{state[:questions][1][:explanation]}"}</p>
+                <br/>
+                <p>{"#{state[:text][:question]} 3: #{state[:questions][2][:description]}"}</p>
+                <p>{"#{state[:text][:explanation]}: #{state[:questions][2][:explanation]}"}</p>
+                <br/>
+                <p>{"#{state[:text][:question]} 4: #{state[:questions][3][:description]}"}</p>
+                <p>{"#{state[:text][:explanation]}: #{state[:questions][3][:explanation]}"}</p>
+                <br/>
+                <p>{"#{state[:text][:question]} 5: #{state[:questions][4][:description]}"}</p>
+                <p>{"#{state[:text][:explanation]}: #{state[:questions][4][:explanation]}"}</p>
+                </div>
 
               <div class="startResetButtonArea">
-                <button class="startResetButton" onclick='{->(e) { actions[:reset].call(0, 0) } }'>{state[:text][:result_view][:reset]}</button>
+                <button class="startResetButton button" onclick='{->(e) { actions[:reset].call(0, 0) } }'>{state[:text][:result_view][:reset]}</button>
               </div>
             </div>
           DOM
