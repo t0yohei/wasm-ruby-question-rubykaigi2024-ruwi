@@ -43,6 +43,13 @@
       border-radius: 8px;
     }
 
+    .officialOgp {
+      width: auto;
+      height: 40vh;
+      display: flex;
+      margin: 24px auto;
+    }
+
     .button {
       margin: 0;
       padding: 0 16px;
@@ -186,6 +193,8 @@
                 <li>{state[:text][:initial_view][:description_four]}</li>
                 <li>{state[:text][:initial_view][:description_five]}</li>
               </ul>
+
+              <img class="officialOgp" src="official_ogp.png" alt="official ogp image" >
 
               <div class="startResetButtonArea">
                 <button class="startResetButton button" onclick='{->(e) { actions[:start].call(0, 0) } }'>{state[:text][:initial_view][:start]}</button>
