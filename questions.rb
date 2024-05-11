@@ -24,6 +24,11 @@ QUESTIONS = [
   { description: 'Ruby の色は?', choices: ['赤色', '黄色', '青色', '黒色'], answerIndex: 0, explanation: 'Ruby は 赤色 です。' },
   { description: 'Ruby の石言葉は?', choices: ['幸福', '情熱', '誠実', '健康'], answerIndex: 1, explanation: 'Ruby の石言葉は 情熱 です。' },
   { description: 'ルビーの指輪 の作曲者は?', choices: ['筒美京平', '芹澤廣明', '小田裕一郎', '寺尾聰'], answerIndex: 3, explanation: 'ルビーの指輪 は 寺尾聰 が作曲しました。' },
+  { description: 'Ruby のコード `??` を評価した結果は?', choices: ['" "', '"?"', '"!"', 'Error 発生'], answerIndex: 1, explanation: 'Ruby のコード `??` を評価した結果は `"?"` になります.' },
+  { description: 'Ruby のコード `[*0..4]` を評価した結果は?', choices: ['[0, 1, 2, 3, 4]', '["0", "1", "2", "3", "4"]', '["4", "3", "2", "1", "0"]', 'Error 発生'], answerIndex: 0, explanation: 'Ruby のコード `[*0..4]` を評価した結果は `[0, 1, 2, 3, 4]` になります.' },
+  { description: 'Ruby のコード `[*?A..?E]` を評価した結果は?', choices: ['[:A, :B, :C, :D, :E]', '["A", "B", "C", "D", "E"]', '[:a, :b, :c, :d, :e]', 'Error 発生'], answerIndex: 1, explanation: 'Ruby のコード `[*?A..?E]` を評価した結果は `["A", "B", "C", "D", "E"]` になります.' },
+  { description: 'Ruby のコード `123456789.digits.reverse` を評価した結果は?', choices: ['987654321', '[9, 8, 7, 6, 5, 4, 3, 2, 1]', '[1, 2, 3, 4, 5, 6, 7, 8, 9]', 'Error 発生'], answerIndex: 2, explanation: 'Ruby のコード `123456789.digits.reverse` を評価した結果は `[1, 2, 3, 4, 5, 6, 7, 8, 9]` になります.' },
+  { description: 'Ruby のコード `123456789.to_s.split` を評価した結果は?', choices: ['["123456789"]', '["1", "2", "3", "4", "5", "6", "7", "8", "9"]', '"123456789"', 'Error 発生'], answerIndex: 0, explanation: 'Ruby のコード `123456789.to_s.split` を評価した結果は `["123456789"]` になります.' },
 ]
 
 ENGLISH_QUESTIONS = [
@@ -52,4 +57,9 @@ ENGLISH_QUESTIONS = [
   { description: 'What color is ruby?', choices: ['Red', 'Ye', 'Blue', 'Black'], answerIndex: 0, explanation: 'Ruby is red.' },
   { description: 'In Japan, what does ruby symbolize?', choices: ['Welfare', 'Passion', 'Honesty', 'Health'], answerIndex: 1, explanation: 'In Japan, ruby symbolizes passion.' },
   { description: 'Who composed the Japanese song ルビーの指輪 (Ruby No Yubiwa)?', choices: ['Kyohei Tsutsumi', 'Hiroaki Serizawa', 'Yuichiro Oda', 'Akira Terao'], answerIndex: 3, explanation: 'The Japanese song ルビーの指輪 (Ruby No Yubiwa) was composed by Akira Terao.' },
+  { description: 'Which is the result of evaluating the Ruby code `??`?', choices: ['" "', '"?"', '"!"', 'Errors occur.'], answerIndex: 1, explanation: 'The result of evaluating the Ruby code `??` is `"?"`.' },
+  { description: 'Which is the result of evaluating the Ruby code `[*0..4]`?', choices: ['[0, 1, 2, 3, 4]', '["0", "1", "2", "3", "4"]', '["4", "3", "2", "1", "0"]', 'Errors occur.'], answerIndex: 0, explanation: 'The result of evaluating the Ruby code `[*0..4]` is `[0, 1, 2, 3, 4]`.' },
+  { description: 'Which is the result of evaluating the Ruby code `[*?A..?E]`?', choices: ['[:A, :B, :C, :D, :E]', '["A", "B", "C", "D", "E"]', '[:a, :b, :c, :d, :e]', 'Errors occur.'], answerIndex: 1, explanation: 'The result of evaluating the Ruby code `[*?A..?E]` is `["A", "B", "C", "D", "E"]` .' },
+  { description: 'Which is the result of evaluating the Ruby code `123456789.digits.reverse`?', choices: ['987654321', '[9, 8, 7, 6, 5, 4, 3, 2, 1]', '[1, 2, 3, 4, 5, 6, 7, 8, 9]', 'Errors occur'], answerIndex: 2, explanation: 'The result of evaluating the Ruby code `123456789.digits.reverse` is `[1, 2, 3, 4, 5, 6, 7, 8, 9]`.' },
+  { description: 'Which is the result of evaluating the Ruby code `123456789.to_s.split`?', choices: ['["123456789"]', '["1", "2", "3", "4", "5", "6", "7", "8", "9"]', '"123456789"', 'Errors occur.'], answerIndex: 0, explanation: 'The result of evaluating the Ruby code `123456789.to_s.split` is `["123456789"]`.' },
 ]
