@@ -301,7 +301,7 @@
         questionResultView = ->(state, actions) {
           eval RubyWasmVdom::DomParser.parse(<<-DOM)
             <div class="questionResult #{state[:lastQuestionResult]}">
-              {state[:text][state[:lastQuestionResult].to_sym]}
+              {state[:text][:question_result_view][state[:lastQuestionResult].to_sym]}
             </div>
           DOM
         }
