@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <title>Ruby Quize 2024 by CrowdWorks</title>
+  <title>Ruby Quize at RubyKaigi 2024</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <script type="module" src="https://getty104.github.io/ruby-wasm-vdom/index.js"></script>
   <script type="text/ruby" src='i18n.rb'></script>
@@ -28,12 +28,25 @@
     }
 
     body {
+      position: relative;
       font-family: 'Hiragino Kaku Gothic Pro', sans-serif;
       color: var(--color-black);
       background-color: var(--color-blue-light);
       width: 80vw;
       margin-right: auto;
       margin-left: auto;
+    }
+
+    .title {
+      color: var(--color-primary);
+    }
+
+    .logos {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: inline-flex;
+      gap: 16px;
     }
 
     .appArea {
@@ -163,11 +176,26 @@
       border-radius: 4px;
       background-color: var(--color-gray-light);
     }
+
+    .aboutRubyLogo {
+      float: right;
+    }
   </style>
 </head>
 <body>
-  <h1>Ruby Quize 2024 by CrowdWorks</h1>
+  <h1>Ruby Quize at RubyKaigi 2024</h1>
+  <div class="logos">
+    <img src="crowdworks_2line_logo_M_size.png" alt="crowdworks logo" width="124" height="48">
+    <img src="web-assembly-icon-128px.png" alt="web assembly icon" width="48" height="48">
+    <span>
+      <img src="ruby.png" alt="ruby icon" width="48" height="48">
+      <small>※</small>
+    </span>
+  </div>
   <div id="app" class="appArea"></div>
+  <div class="aboutRubyLogo">
+    <small>※ <a href="https://www.ruby-lang.org/ja/about/logo" >https://www.ruby-lang.org/ja/about/logo</a></small>
+  </div>
 
   <script type="text/ruby">
     require "js"
