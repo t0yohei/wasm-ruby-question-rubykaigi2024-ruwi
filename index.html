@@ -203,7 +203,7 @@
     class Main
       def initialize
         @state = {
-          questions: QUESTIONS.shuffle[0..][0..5],
+          questions: [],
           questionIndex: 0,
           correctAnswerCount: 0,
           lastQuestionResult: '',
@@ -241,16 +241,25 @@
         actions = {
           # actions 内で引数の数を 2 つにしないとバグるので無理やり2つ設定する
           start: ->(_a, _b) {
+            if state[:lang] == 'ja'
+              QUESTION_GROUPS.each do |group|
+                group_questions = QUESTIONS.select {|question| question[:question_group_id] == group[:id] }
+                state[:questions] << group_questions.sample
+              end
+            else
+              QUESTION_GROUPS.each do |group|
+                group_questions = ENGLISH_QUESTIONS.select {|question| question[:question_group_id] == group[:id] }
+                state[:questions] << group_questions.sample
+              end
+            end
             showQuestionView()
           },
           changeLang: ->(_a, _b) {
             if state[:lang] == 'ja'
               state[:lang] = 'en'
-              state[:questions] = ENGLISH_QUESTIONS.shuffle[0..][0..5]
               state[:text] = I18N[:en]
             else
               state[:lang] = 'ja'
-              state[:questions] = QUESTIONS.shuffle[0..][0..5]
               state[:text] = I18N[:ja]
             end
             showInitialView()
