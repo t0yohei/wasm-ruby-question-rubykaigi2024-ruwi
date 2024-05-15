@@ -60,7 +60,7 @@
       width: auto;
       height: 35vh;
       display: flex;
-      margin: 24px auto;
+      margin: 40px auto;
     }
 
     .button {
@@ -75,6 +75,10 @@
     .button:focus {
       background-image: linear-gradient(var(--color-black-5), var(--color-black-5));
       background-blend-mode: multiply;
+    }
+
+    .ruleDescription {
+      font-size: 22px;
     }
 
     .changeLangButton {
@@ -221,12 +225,9 @@
             <div>
               <h2>{state[:text][:initial_view][:title]}</h2>
               <button class="changeLangButton button" onclick='{->(e) { actions[:changeLang].call(0, 0) } }'>{state[:text][:initial_view][:change_lang]}</button>
-              <ul>
+              <ul class="ruleDescription">
                 <li>{state[:text][:initial_view][:description_one]}</li>
                 <li>{state[:text][:initial_view][:description_two]}</li>
-                <li>{state[:text][:initial_view][:description_three]}</li>
-                <li>{state[:text][:initial_view][:description_four]}</li>
-                <li>{state[:text][:initial_view][:description_five]}</li>
               </ul>
 
               <img class="officialOgp" src="official_ogp.png" alt="official ogp image" >
