@@ -49,16 +49,25 @@
       gap: 16px;
     }
 
+    @media (width < 600px) {
+      .logos {
+        position: relative;
+        margin-bottom: 10px;
+      }
+    }
+
     .appArea {
+      position: relative;
       background-color: var(--color-white);
-      height: 85vh;
+      min-height: 85vh;
       padding: 10px 24px;
       border-radius: 8px;
     }
 
     .officialOgp {
-      width: auto;
-      height: 35vh;
+      width: 68vw;
+      max-width: 600px;
+      height: auto;
       display: flex;
       margin: 40px auto;
     }
@@ -83,9 +92,11 @@
 
     .changeLangButton {
       font-size: 16px;
-      float: right;
       background-color: var(--color-white);
       border: 1px solid var(--color-gray);
+      position: absolute;
+      right: 24px;
+      top: 30px;
     }
 
     .questionButtons {
@@ -95,12 +106,22 @@
       gap: 28px;
     }
 
+    @media (width < 600px) {
+      .questionButtons {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        gap: 16px;
+      }
+    }
+
     .questionButton {
       height: 56px;
       font-size: 22px;
       width: 100%;
       background-color: var(--color-white);
       border: 1px solid var(--color-gray);
+      word-wrap: break-word;
     }
 
     .startResetButtonArea {
@@ -123,6 +144,14 @@
       font-size: 80px;
       text-align: center;
       margin: 100px 0;
+    }
+
+    @media (width < 600px) {
+      .timer {
+        font-size: 48px;
+        text-align: center;
+        margin: 10px 0;
+      }
     }
 
     .correct {
@@ -148,6 +177,13 @@
       font-weight: bold;
     }
 
+    @media (width < 600px) {
+      .resultText {
+        font-size: 20px;
+      }
+    }
+
+
     .techBlogLink {
       display: flex;
       flex-direction: column;
@@ -155,6 +191,12 @@
       position: absolute;
       top: 0;
       right: 0;
+    }
+
+    @media (width < 600px) {
+      .techBlogLink {
+        display: none;
+      }
     }
 
     .blogText {
