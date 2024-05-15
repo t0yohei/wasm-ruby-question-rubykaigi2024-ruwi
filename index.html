@@ -252,6 +252,7 @@
                 state[:questions] << group_questions.sample
               end
             end
+            puts state[:questions].map{ |q| q[:description] }
             showQuestionView()
           },
           changeLang: ->(_a, _b) {
