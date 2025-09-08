@@ -2,212 +2,263 @@
 
 require "js"
 
-class Main
-  def initialize
-    @state = {
+# メインアプリケーションコンポーネント
+MainAppComponent = RubyWasmUi.define_component(
+  state: ->(props) {
+    {
       questions: [],
-      questionIndex: 0,
-      correctAnswerCount: 0,
-      lastQuestionResult: '',
+      question_index: 0,
+      correct_answer_count: 0,
+      last_question_result: '',
       lang: 'ja',
       text: I18N[:ja],
+      current_view: 'initial',
+      timer: 30,
     }
-  end
+  },
 
-  attr_reader :state
+  methods: {
+    start_quiz: -> {
+      state = self.state
+      questions = []
 
-  def showInitialView
-    # 初期表示 View
-    initialView = ->(state, actions) {
-      eval RubyWasmVdom::DomParser.parse(<<-DOM)
-        <div>
-          <h2>{state[:text][:initial_view][:title]}</h2>
-          <button class="changeLangButton button" onclick='{->(e) { actions[:changeLang].call(0, 0) } }'>{state[:text][:initial_view][:change_lang]}</button>
-          <ul class="ruleDescription">
-            <li>{state[:text][:initial_view][:description_one]}</li>
-            <li>{state[:text][:initial_view][:description_two]}</li>
-          </ul>
-
-          <img class="officialOgp" src="official_ogp.png" alt="official ogp image" >
-
-          <div class="startResetButtonArea">
-            <button class="startResetButton button" onclick='{->(e) { actions[:start].call(0, 0) } }'>{state[:text][:initial_view][:start]}</button>
-          </div>
-        </div>
-      DOM
-    }
-
-    actions = {
-      # actions 内で引数の数を 2 つにしないとバグるので無理やり2つ設定する
-      start: ->(_a, _b) {
-        if state[:lang] == 'ja'
-          QUESTION_GROUPS.each do |group|
-            group_questions = QUESTIONS.select {|question| question[:question_group_id] == group[:id] }
-            state[:questions] << group_questions.sample
-          end
-        else
-          QUESTION_GROUPS.each do |group|
-            group_questions = ENGLISH_QUESTIONS.select {|question| question[:question_group_id] == group[:id] }
-            state[:questions] << group_questions.sample
-          end
+      if state[:lang] == 'ja'
+        QUESTION_GROUPS.each do |group|
+          group_questions = QUESTIONS.select {|question| question[:question_group_id] == group[:id] }
+          questions << group_questions.sample
         end
-        puts state[:questions].map{ |q| q[:description] }
-        showQuestionView()
-      },
-      changeLang: ->(_a, _b) {
-        if state[:lang] == 'ja'
-          state[:lang] = 'en'
-          state[:text] = I18N[:en]
-        else
-          state[:lang] = 'ja'
-          state[:text] = I18N[:ja]
-        end
-        showInitialView()
-      }
-    }
-
-    renderApp(state: state, view: initialView, actions: actions)
-  end
-
-  private
-
-  def renderApp(state:, view:, actions:)
-    appEl = JS.global[:document].getElementById('app');
-    children = appEl[:children]
-
-    # 既存の view があれば非表示にする。
-    if children[:length].to_i > 0
-      children[0].remove()
-    end
-
-    render = lambda {
-      RubyWasmVdom::App.new(
-        el: "#app",
-        state:,
-        view:,
-        actions:
-      )
-    }
-
-    # すぐに描画するとエラーになるので、少し待ってから描画する
-    JS.global.call(:setTimeout, JS.try_convert(render))
-  end
-
-  def showQuestionView
-    # 問題 View
-    questionView = ->(state, actions) {
-      eval RubyWasmVdom::DomParser.parse(<<-DOM)
-        <div>
-          <h2>{"#{state[:text][:question]} #{state[:questions].index(state[:questions][state[:questionIndex]]) + 1}: #{state[:questions][state[:questionIndex]][:description]}"}</h2>
-
-          <div class="timer" id="timer">30</div>
-
-          <div class="questionButtons">
-            <button class="questionButton button" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
-            <button class="questionButton button" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
-            <button class="questionButton button" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
-            <button class="questionButton button" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
-          </div>
-        </div>
-      DOM
-    }
-
-    actions = {
-      selectChoice: ->(question, choiceIndex) {
-        state[:questionIndex] += 1
-
-        if question[:answerIndex] == choiceIndex
-          state[:correctAnswerCount] += 1
-          state[:lastQuestionResult] = 'correct'
-          showQuestionResultView
-        else
-          state[:lastQuestionResult] = 'incorrect'
-          showQuestionResultView
-        end
-
-        # タイマーのリセット
-        timerEl = JS.global[:document].getElementById('timer')
-        timerEl[:textContent] = 30
-      },
-    }
-
-    renderApp(state: state, view: questionView, actions: actions)
-  end
-
-  def showQuestionResultView
-    # 回答結果画面用の View
-    questionResultView = ->(state, actions) {
-      eval RubyWasmVdom::DomParser.parse(<<-DOM)
-        <div class="questionResult #{state[:lastQuestionResult]}">
-          {state[:text][:question_result_view][state[:lastQuestionResult].to_sym]}
-        </div>
-      DOM
-    }
-
-    renderApp(state: state, view: questionResultView, actions: {})
-
-    renderNextView = lambda {
-      if state[:questionIndex] == 5
-        showResultView()
       else
-        showQuestionView()
+        QUESTION_GROUPS.each do |group|
+          group_questions = ENGLISH_QUESTIONS.select {|question| question[:question_group_id] == group[:id] }
+          questions << group_questions.sample
+        end
       end
+
+      update_state(questions: questions, question_index: 0, correct_answer_count: 0, current_view: 'question')
+    },
+
+    change_language: -> {
+      state = self.state
+      if state[:lang] == 'ja'
+        update_state(lang: 'en', text: I18N[:en])
+      else
+        update_state( lang: 'ja', text: I18N[:ja])
+      end
+    },
+
+    select_choice: ->(choice_index) {
+      state = self.state
+      current_question = state[:questions][state[:question_index]]
+      new_question_index = state[:question_index] + 1
+
+      if current_question[:answerIndex] == choice_index
+        update_state(
+          question_index: new_question_index,
+          correct_answer_count: state[:correct_answer_count] + 1,
+          last_question_result: 'correct',
+          current_view: 'question_result'
+        )
+      else
+        update_state(
+          question_index: new_question_index,
+          last_question_result: 'incorrect',
+          current_view: 'question_result'
+        )
+      end
+
+      # 1秒後に次の画面に遷移
+      JS.global.call(:setTimeout, JS.try_convert(-> {
+        state = self.state
+        if state[:question_index] == 5
+          update_state(current_view: 'result', timer: 30)
+        else
+          update_state(current_view: 'question', timer: 30)
+        end
+      }), 1000)
+    },
+
+    reset_quiz: -> {
+      JS.global[:window][:location].reload()
     }
+  },
 
-    # 次の問題画面 or 結果画面を 1 秒後に表示する
-    JS.global.call(:setTimeout, JS.try_convert(renderNextView), 1000)
-  end
+  render: ->(component) {
+    state = component.state
 
-  def showResultView
-    # 結果画面用の View
-    resultView = ->(state, actions) {
-      eval RubyWasmVdom::DomParser.parse(<<-DOM)
-        <div>
-          <h2>{state[:text][:result_view][:title]}</h2>
-          <div class="resultArea">
-            <p class="resultText">{state[:text][:result_view][:detail].call(state[:correctAnswerCount])}</p>
-            <div class="techBlogLink">
-              <img src="qrcode.png" alt="{state[:text][:result_view][:blog_alt]}" width="100" height="100">
-              <span class="blogText">{state[:text][:result_view][:blog]}</span>
-            </div>
-          </div>
+    RubyWasmUi::Template::Parser.parse_and_eval(<<~HTML, binding)
+      <div>
+        <initial-view-component
+          r-if="{state[:current_view] == 'initial'}"
+          lang="{state[:lang]}"
+          text="{state[:text]}"
+          on="{
+            start: -> { component.start_quiz },
+            change_lang: -> { component.change_language }
+          }">
+        </initial-view-component>
 
-          <h2>{state[:text][:explanation]}</h2>
+        <question-view-component
+          r-if="{state[:current_view] == 'question'}"
+          questions="{state[:questions]}"
+          question_index="{state[:question_index]}"
+          text="{state[:text]}"
+          timer="{state[:timer]}"
+          on="{
+            select_choice: ->(choice_index) { component.select_choice(choice_index) }
+          }">
+        </question-view-component>
 
-          <div class="explanationArea">
-            <p>{"#{state[:text][:question]} 1: #{state[:questions][0][:description]}"}</p>
-            <p>{"#{state[:text][:explanation]}: #{state[:questions][0][:explanation]}"}</p>
-            <br/>
-            <p>{"#{state[:text][:question]} 2: #{state[:questions][1][:description]}"}</p>
-            <p>{"#{state[:text][:explanation]}: #{state[:questions][1][:explanation]}"}</p>
-            <br/>
-            <p>{"#{state[:text][:question]} 3: #{state[:questions][2][:description]}"}</p>
-            <p>{"#{state[:text][:explanation]}: #{state[:questions][2][:explanation]}"}</p>
-            <br/>
-            <p>{"#{state[:text][:question]} 4: #{state[:questions][3][:description]}"}</p>
-            <p>{"#{state[:text][:explanation]}: #{state[:questions][3][:explanation]}"}</p>
-            <br/>
-            <p>{"#{state[:text][:question]} 5: #{state[:questions][4][:description]}"}</p>
-            <p>{"#{state[:text][:explanation]}: #{state[:questions][4][:explanation]}"}</p>
-            </div>
+        <question-result-view-component
+          r-if="{state[:current_view] == 'question_result'}"
+          last_question_result="{state[:last_question_result]}"
+          text="{state[:text]}">
+        </question-result-view-component>
 
-          <div class="startResetButtonArea">
-            <button class="startResetButton button" onclick='{->(e) { actions[:reset].call(0, 0) } }'>{state[:text][:result_view][:reset]}</button>
+        <result-view-component
+          r-if="{state[:current_view] == 'result'}"
+          correct_answer_count="{state[:correct_answer_count]}"
+          questions="{state[:questions]}"
+          text="{state[:text]}"
+          on="{
+            reset: -> { component.reset_quiz }
+          }">
+        </result-view-component>
+      </div>
+    HTML
+  }
+)
+
+# 初期表示コンポーネント
+InitialViewComponent = RubyWasmUi.define_component(
+  render: ->(component) {
+    props = component.props
+    RubyWasmUi::Template::Parser.parse_and_eval(<<~HTML, binding)
+      <div>
+        <h2>{props[:text][:initial_view][:title]}</h2>
+        <button class="changeLangButton button" on="{click: ->(e) { component.emit('change_lang', e) }}">
+          {props[:text][:initial_view][:change_lang]}
+        </button>
+        <ul class="ruleDescription">
+          <li>{props[:text][:initial_view][:description_one]}</li>
+          <li>{props[:text][:initial_view][:description_two]}</li>
+        </ul>
+
+        <img class="officialOgp" src="official_ogp.png" alt="official ogp image" />
+
+        <div class="startResetButtonArea">
+          <button class="startResetButton button" on="{click: ->(e) { component.emit('start', e) }}">
+            {props[:text][:initial_view][:start]}
+          </button>
+        </div>
+      </div>
+    HTML
+  }
+)
+
+# 問題表示コンポーネント
+QuestionViewComponent = RubyWasmUi.define_component(
+  render: ->(component) {
+    props = component.props
+    questions = props[:questions] || []
+    question_index = props[:question_index] || 0
+    text = props[:text] || I18N[:ja]
+    current_question = questions[question_index]
+    question_number = question_index + 1
+    timer = props[:timer] || 30
+
+
+    RubyWasmUi::Template::Parser.parse_and_eval(<<~HTML, binding)
+      <div>
+        <h2>
+          {text[:question]} {question_number}: {current_question[:description]}
+        </h2>
+
+        <div class="timer" id="timer">{timer}</div>
+
+        <div class="questionButtons">
+          <button class="questionButton button" on="{click: ->(e) { component.emit('select_choice', 0) }}">
+            {current_question[:choices][0]}
+          </button>
+          <button class="questionButton button" on="{click: ->(e) { component.emit('select_choice', 1) }}">
+            {current_question[:choices][1]}
+          </button>
+          <button class="questionButton button" on="{click: ->(e) { component.emit('select_choice', 2) }}">
+            {current_question[:choices][2]}
+          </button>
+          <button class="questionButton button" on="{click: ->(e) { component.emit('select_choice', 3) }}">
+            {current_question[:choices][3]}
+          </button>
+        </div>
+      </div>
+    HTML
+  }
+)
+
+# 問題結果表示コンポーネント
+QuestionResultViewComponent = RubyWasmUi.define_component(
+  render: ->(component) {
+    props = component.props
+    last_question_result = props[:last_question_result] || ''
+    text = props[:text] || I18N[:ja]
+    result_class = last_question_result
+    result_text = text[:question_result_view][last_question_result.to_sym]
+    RubyWasmUi::Template::Parser.parse_and_eval(<<~HTML, binding)
+      <div class="questionResult #{result_class}">
+        {result_text}
+      </div>
+    HTML
+  }
+)
+
+# 最終結果表示コンポーネント
+ResultViewComponent = RubyWasmUi.define_component(
+  render: ->(component) {
+    props = component.props
+    correct_answer_count = props[:correct_answer_count] || 0
+    text = props[:text] || I18N[:ja]
+    result_detail = text[:result_view][:detail].call(correct_answer_count)
+    RubyWasmUi::Template::Parser.parse_and_eval(<<~HTML, binding)
+      <div>
+        <h2>{text[:result_view][:title]}</h2>
+        <div class="resultArea">
+          <p class="resultText">{result_detail}</p>
+          <div class="techBlogLink">
+            <img src="qrcode.png" alt="{text[:result_view][:blog_alt]}" width="100" height="100" />
+            <span class="blogText">{text[:result_view][:blog]}</span>
           </div>
         </div>
-      DOM
-    }
 
-    actions = {
-      # actions 内で引数の数を 2 つにしないとバグるので無理やり2つ設定する
-      reset: ->(_a, _b) {
-        JS.global[:window][:location].reload();
-      }
-    }
+        <h2>{text[:explanation]}</h2>
 
-    renderApp(state: state, view: resultView, actions: actions)
-  end
-end
+        <div class="explanationArea">
+          <p>{text[:question]} 1: {props[:questions][0][:description]}</p>
+          <p>{text[:explanation]}: {props[:questions][0][:explanation]}</p>
+          <br/>
+          <p>{text[:question]} 2: {props[:questions][1][:description]}</p>
+          <p>{text[:explanation]}: {props[:questions][1][:explanation]}</p>
+          <br/>
+          <p>{text[:question]} 3: {props[:questions][2][:description]}</p>
+          <p>{text[:explanation]}: {props[:questions][2][:explanation]}</p>
+          <br/>
+          <p>{text[:question]} 4: {props[:questions][3][:description]}</p>
+          <p>{text[:explanation]}: {props[:questions][3][:explanation]}</p>
+          <br/>
+          <p>{text[:question]} 5: {props[:questions][4][:description]}</p>
+          <p>{text[:explanation]}: {props[:questions][4][:explanation]}</p>
+        </div>
 
-main = Main.new
-main.showInitialView()
+        <div class="startResetButtonArea">
+          <button class="startResetButton button" on="{click: ->(e) { component.emit('reset', e) }}">
+            {text[:result_view][:reset]}
+          </button>
+        </div>
+      </div>
+    HTML
+  }
+)
+
+
+# アプリケーションの作成とマウント
+app = RubyWasmUi::App.create(MainAppComponent)
+app_element = JS.global[:document].getElementById("app")
+app.mount(app_element)
