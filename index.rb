@@ -77,6 +77,10 @@ MainAppComponent = RubyWasmUi.define_component(
       }), 1000)
     },
 
+    update_timer: ->(timer) {
+      update_state(timer: timer)
+    },
+
     reset_quiz: -> {
       JS.global[:window][:location].reload()
     }
@@ -104,7 +108,8 @@ MainAppComponent = RubyWasmUi.define_component(
           text="{state[:text]}"
           timer="{state[:timer]}"
           on="{
-            select_choice: ->(choice_index) { component.select_choice(choice_index) }
+            select_choice: ->(choice_index) { component.select_choice(choice_index) },
+            update_timer: ->(timer) { component.update_timer(timer) }
           }">
         </question-view-component>
 
@@ -166,14 +171,13 @@ QuestionViewComponent = RubyWasmUi.define_component(
     question_number = question_index + 1
     timer = props[:timer] || 30
 
-
     RubyWasmUi::Template::Parser.parse_and_eval(<<~HTML, binding)
       <div>
         <h2>
           {text[:question]} {question_number}: {current_question[:description]}
         </h2>
 
-        <div class="timer" id="timer">{timer}</div>
+        <timer-component timer="{timer}" on="{update_timer: ->(timer) { component.emit('update_timer', timer) }}"></timer-component>
 
         <div class="questionButtons">
           <button class="questionButton button" on="{click: ->(e) { component.emit('select_choice', 0) }}">
@@ -191,6 +195,23 @@ QuestionViewComponent = RubyWasmUi.define_component(
         </div>
       </div>
     HTML
+  }
+)
+
+# タイマー表示コンポーネント
+TimerComponent = RubyWasmUi.define_component(
+  render: ->(component) {
+    props = component.props
+    timer = props[:timer] || 30
+    RubyWasmUi::Template::Parser.parse_and_eval(<<~HTML, binding)
+      <div class="timer" id="timer">{timer}</div>
+    HTML
+  },
+
+  on_mounted: ->(component) {
+    JS.global.call(:setInterval, JS.try_convert(-> {
+      component.emit('update_timer', component.props[:timer] - 1)
+    }), 1000)
   }
 )
 
@@ -256,7 +277,6 @@ ResultViewComponent = RubyWasmUi.define_component(
     HTML
   }
 )
-
 
 # アプリケーションの作成とマウント
 app = RubyWasmUi::App.create(MainAppComponent)

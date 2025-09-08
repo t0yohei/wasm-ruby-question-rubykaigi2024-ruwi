@@ -254,17 +254,5 @@
         ></small
       >
     </div>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        // タイマーの更新。ruby で実現できなかったので、JavaScript で実装
-        window.setInterval(() => {
-          timerEl = document.getElementById("timer");
-          if (!timerEl) return;
-          const currentValue = parseInt(timerEl.textContent);
-          timerEl.textContent = currentValue - 1;
-        }, 1000);
-      });
-    </script>
   </body>
 </html>
