@@ -1,471 +1,486 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="utf-8">
-  <title>Ruby Quize at RubyKaigi 2024</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <script type="module" src="https://getty104.github.io/ruby-wasm-vdom/index.js"></script>
-  <script type="text/ruby" src='i18n.rb'></script>
-  <script type="text/ruby" src='questions.rb'></script>
+  <head>
+    <meta charset="utf-8" />
+    <title>Ruby Quize at RubyKaigi 2024</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <script
+      type="module"
+      src="https://getty104.github.io/ruby-wasm-vdom/index.js"
+    ></script>
+    <script type="text/ruby" defer src="i18n.rb"></script>
+    <script type="text/ruby" defer src="questions.rb"></script>
 
-  <style>
-    :root {
-      /* Color */
-      --color-primary: #0068b6;
-      --color-primary-dark: #004a97;
-      --color-blue-light: #e7f1fa;
-      --color-success: #177835;
-      --color-danger:  #c92b36;
-      --color-gray: #617084;
-      --color-gray-light: #ecedf0;
-      --color-black: #353d48;
-      --color-white: rgb(255 255 255 / 100%);
-      --color-black-5: rgb(0 0 0 / 5%);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      position: relative;
-      font-family: 'Hiragino Kaku Gothic Pro', sans-serif;
-      color: var(--color-black);
-      background-color: var(--color-blue-light);
-      width: 80vw;
-      margin-right: auto;
-      margin-left: auto;
-    }
-
-    .title {
-      color: var(--color-primary);
-    }
-
-    .logos {
-      position: absolute;
-      top: 0;
-      right: 0;
-      display: inline-flex;
-      gap: 16px;
-    }
-
-    @media (width < 600px) {
-      .logos {
-        position: relative;
-        margin-bottom: 10px;
+    <style>
+      :root {
+        /* Color */
+        --color-primary: #0068b6;
+        --color-primary-dark: #004a97;
+        --color-blue-light: #e7f1fa;
+        --color-success: #177835;
+        --color-danger: #c92b36;
+        --color-gray: #617084;
+        --color-gray-light: #ecedf0;
+        --color-black: #353d48;
+        --color-white: rgb(255 255 255 / 100%);
+        --color-black-5: rgb(0 0 0 / 5%);
       }
-    }
 
-    .appArea {
-      position: relative;
-      background-color: var(--color-white);
-      min-height: 85vh;
-      padding: 10px 24px;
-      border-radius: 8px;
-    }
+      * {
+        box-sizing: border-box;
+      }
 
-    .officialOgp {
-      width: 68vw;
-      max-width: 600px;
-      height: auto;
-      display: flex;
-      margin: 40px auto;
-    }
+      body {
+        position: relative;
+        font-family: "Hiragino Kaku Gothic Pro", sans-serif;
+        color: var(--color-black);
+        background-color: var(--color-blue-light);
+        width: 80vw;
+        margin-right: auto;
+        margin-left: auto;
+      }
 
-    .button {
-      margin: 0;
-      padding: 0 16px;
-      height: 40px;
-      cursor: pointer;
-      border-radius: 4px;
-    }
+      .title {
+        color: var(--color-primary);
+      }
 
-    .button:hover,
-    .button:focus {
-      background-image: linear-gradient(var(--color-black-5), var(--color-black-5));
-      background-blend-mode: multiply;
-    }
-
-    .ruleDescription {
-      font-size: 22px;
-    }
-
-    .changeLangButton {
-      font-size: 16px;
-      background-color: var(--color-white);
-      border: 1px solid var(--color-gray);
-      position: absolute;
-      right: 24px;
-      top: 30px;
-    }
-
-    .questionButtons {
-      margin: 0 32px;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 28px;
-    }
-
-    @media (width < 600px) {
-      .questionButtons {
-        display: flex;
-        flex-direction: column;
-        margin: 0;
+      .logos {
+        position: absolute;
+        top: 0;
+        right: 0;
+        display: inline-flex;
         gap: 16px;
       }
-    }
 
-    .questionButton {
-      height: 56px;
-      font-size: 22px;
-      width: 100%;
-      background-color: var(--color-white);
-      border: 1px solid var(--color-gray);
-      word-wrap: break-word;
-    }
+      @media (width < 600px) {
+        .logos {
+          position: relative;
+          margin-bottom: 10px;
+        }
+      }
 
-    .startResetButtonArea {
-      text-align: center;
-      margin-top: 35px;
-    }
+      .appArea {
+        position: relative;
+        background-color: var(--color-white);
+        min-height: 85vh;
+        padding: 10px 24px;
+        border-radius: 8px;
+      }
 
-    .startResetButton {
-      height: 56px;
-      font-size: 22px;
-      width: 100%;
-      background-color: var(--color-primary);
-      color: var(--color-white);
-      border: 0;
-      max-width: 500px;
-      font-weight: bold;
-    }
+      .officialOgp {
+        width: 68vw;
+        max-width: 600px;
+        height: auto;
+        display: flex;
+        margin: 40px auto;
+      }
 
-    .timer {
-      font-size: 80px;
-      text-align: center;
-      margin: 100px 0;
-    }
+      .button {
+        margin: 0;
+        padding: 0 16px;
+        height: 40px;
+        cursor: pointer;
+        border-radius: 4px;
+      }
 
-    @media (width < 600px) {
-      .timer {
-        font-size: 48px;
+      .button:hover,
+      .button:focus {
+        background-image: linear-gradient(
+          var(--color-black-5),
+          var(--color-black-5)
+        );
+        background-blend-mode: multiply;
+      }
+
+      .ruleDescription {
+        font-size: 22px;
+      }
+
+      .changeLangButton {
+        font-size: 16px;
+        background-color: var(--color-white);
+        border: 1px solid var(--color-gray);
+        position: absolute;
+        right: 24px;
+        top: 30px;
+      }
+
+      .questionButtons {
+        margin: 0 32px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 28px;
+      }
+
+      @media (width < 600px) {
+        .questionButtons {
+          display: flex;
+          flex-direction: column;
+          margin: 0;
+          gap: 16px;
+        }
+      }
+
+      .questionButton {
+        height: 56px;
+        font-size: 22px;
+        width: 100%;
+        background-color: var(--color-white);
+        border: 1px solid var(--color-gray);
+        word-wrap: break-word;
+      }
+
+      .startResetButtonArea {
         text-align: center;
-        margin: 10px 0;
+        margin-top: 35px;
       }
-    }
 
-    .correct {
-      color: var(--color-success)
-    }
+      .startResetButton {
+        height: 56px;
+        font-size: 22px;
+        width: 100%;
+        background-color: var(--color-primary);
+        color: var(--color-white);
+        border: 0;
+        max-width: 500px;
+        font-weight: bold;
+      }
 
-    .incorrect {
-      color: var(--color-danger)
-    }
+      .timer {
+        font-size: 80px;
+        text-align: center;
+        margin: 100px 0;
+      }
 
-    .resultArea {
-      display: flex;
-      align-items: center;
-      padding: 0 40px;
-      position: relative;
-      height: 10vh;
-    }
+      @media (width < 600px) {
+        .timer {
+          font-size: 48px;
+          text-align: center;
+          margin: 10px 0;
+        }
+      }
 
-    .resultText {
-      text-align: center;
-      width: 100%;
-      font-size: 32px;
-      font-weight: bold;
-    }
+      .correct {
+        color: var(--color-success);
+      }
 
-    @media (width < 600px) {
+      .incorrect {
+        color: var(--color-danger);
+      }
+
+      .resultArea {
+        display: flex;
+        align-items: center;
+        padding: 0 40px;
+        position: relative;
+        height: 10vh;
+      }
+
       .resultText {
-        font-size: 20px;
+        text-align: center;
+        width: 100%;
+        font-size: 32px;
+        font-weight: bold;
       }
-    }
 
+      @media (width < 600px) {
+        .resultText {
+          font-size: 20px;
+        }
+      }
 
-    .techBlogLink {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: absolute;
-      top: 0;
-      right: 0;
-    }
-
-    @media (width < 600px) {
       .techBlogLink {
-        display: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        right: 0;
       }
-    }
 
-    .blogText {
-      width: 300px;
-      text-align: center;
-      word-break: keep-all;
-    }
-
-    .questionResult {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 80vh;
-      font-size: 56px;
-      font-weight: bold;
-    }
-
-    .explanationArea {
-      padding: 0 40px;
-      overflow: scroll;
-      height: 40vh;
-      border: 1px solid var(--color-gray);
-      border-radius: 4px;
-      background-color: var(--color-gray-light);
-    }
-
-    .aboutRubyLogo {
-      float: right;
-    }
-  </style>
-</head>
-<body>
-  <h1>Ruby Quize at RubyKaigi 2024</h1>
-  <div class="logos">
-    <img src="web-assembly-icon-128px.png" alt="web assembly icon" width="48" height="48">
-    <span>
-      <img src="ruby.png" alt="ruby icon" width="48" height="48">
-      <small>※</small>
-    </span>
-  </div>
-  <div id="app" class="appArea"></div>
-  <div class="aboutRubyLogo">
-    <small>※ <a href="https://www.ruby-lang.org/ja/about/logo" >https://www.ruby-lang.org/ja/about/logo</a></small>
-  </div>
-
-  <script type="text/ruby">
-    require "js"
-
-    class Main
-      def initialize
-        @state = {
-          questions: [],
-          questionIndex: 0,
-          correctAnswerCount: 0,
-          lastQuestionResult: '',
-          lang: 'ja',
-          text: I18N[:ja],
+      @media (width < 600px) {
+        .techBlogLink {
+          display: none;
         }
-      end
+      }
 
-      attr_reader :state
+      .blogText {
+        width: 300px;
+        text-align: center;
+        word-break: keep-all;
+      }
 
-      def showInitialView
-        # 初期表示 View
-        initialView = ->(state, actions) {
-          eval RubyWasmVdom::DomParser.parse(<<-DOM)
-            <div>
-              <h2>{state[:text][:initial_view][:title]}</h2>
-              <button class="changeLangButton button" onclick='{->(e) { actions[:changeLang].call(0, 0) } }'>{state[:text][:initial_view][:change_lang]}</button>
-              <ul class="ruleDescription">
-                <li>{state[:text][:initial_view][:description_one]}</li>
-                <li>{state[:text][:initial_view][:description_two]}</li>
-              </ul>
+      .questionResult {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 80vh;
+        font-size: 56px;
+        font-weight: bold;
+      }
 
-              <img class="officialOgp" src="official_ogp.png" alt="official ogp image" >
+      .explanationArea {
+        padding: 0 40px;
+        overflow: scroll;
+        height: 40vh;
+        border: 1px solid var(--color-gray);
+        border-radius: 4px;
+        background-color: var(--color-gray-light);
+      }
 
-              <div class="startResetButtonArea">
-                <button class="startResetButton button" onclick='{->(e) { actions[:start].call(0, 0) } }'>{state[:text][:initial_view][:start]}</button>
-              </div>
-            </div>
-          DOM
-        }
+      .aboutRubyLogo {
+        float: right;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Ruby Quize at RubyKaigi 2024</h1>
+    <div class="logos">
+      <img
+        src="web-assembly-icon-128px.png"
+        alt="web assembly icon"
+        width="48"
+        height="48"
+      />
+      <span>
+        <img src="ruby.png" alt="ruby icon" width="48" height="48" />
+        <small>※</small>
+      </span>
+    </div>
+    <div id="app" class="appArea"></div>
+    <div class="aboutRubyLogo">
+      <small
+        >※
+        <a href="https://www.ruby-lang.org/ja/about/logo"
+          >https://www.ruby-lang.org/ja/about/logo</a
+        ></small
+      >
+    </div>
 
-        actions = {
-          # actions 内で引数の数を 2 つにしないとバグるので無理やり2つ設定する
-          start: ->(_a, _b) {
-            if state[:lang] == 'ja'
-              QUESTION_GROUPS.each do |group|
-                group_questions = QUESTIONS.select {|question| question[:question_group_id] == group[:id] }
-                state[:questions] << group_questions.sample
-              end
-            else
-              QUESTION_GROUPS.each do |group|
-                group_questions = ENGLISH_QUESTIONS.select {|question| question[:question_group_id] == group[:id] }
-                state[:questions] << group_questions.sample
-              end
-            end
-            puts state[:questions].map{ |q| q[:description] }
-            showQuestionView()
-          },
-          changeLang: ->(_a, _b) {
-            if state[:lang] == 'ja'
-              state[:lang] = 'en'
-              state[:text] = I18N[:en]
-            else
-              state[:lang] = 'ja'
-              state[:text] = I18N[:ja]
-            end
-            showInitialView()
+    <script type="text/ruby">
+      require "js"
+
+      class Main
+        def initialize
+          @state = {
+            questions: [],
+            questionIndex: 0,
+            correctAnswerCount: 0,
+            lastQuestionResult: '',
+            lang: 'ja',
+            text: I18N[:ja],
           }
-        }
-
-        renderApp(state: state, view: initialView, actions: actions)
-      end
-
-      private
-
-      def renderApp(state:, view:, actions:)
-        appEl = JS.global[:document].getElementById('app');
-        children = appEl[:children]
-
-        # 既存の view があれば非表示にする。
-        if children[:length].to_i > 0
-          children[0].remove()
         end
 
-        render = lambda {
-          RubyWasmVdom::App.new(
-            el: "#app",
-            state:,
-            view:,
-            actions:
-          )
-        }
+        attr_reader :state
 
-        # すぐに描画するとエラーになるので、少し待ってから描画する
-        JS.global.call(:setTimeout, JS.try_convert(render))
-      end
+        def showInitialView
+          # 初期表示 View
+          initialView = ->(state, actions) {
+            eval RubyWasmVdom::DomParser.parse(<<-DOM)
+              <div>
+                <h2>{state[:text][:initial_view][:title]}</h2>
+                <button class="changeLangButton button" onclick='{->(e) { actions[:changeLang].call(0, 0) } }'>{state[:text][:initial_view][:change_lang]}</button>
+                <ul class="ruleDescription">
+                  <li>{state[:text][:initial_view][:description_one]}</li>
+                  <li>{state[:text][:initial_view][:description_two]}</li>
+                </ul>
 
-      def showQuestionView
-        # 問題 View
-        questionView = ->(state, actions) {
-          eval RubyWasmVdom::DomParser.parse(<<-DOM)
-            <div>
-              <h2>{"#{state[:text][:question]} #{state[:questions].index(state[:questions][state[:questionIndex]]) + 1}: #{state[:questions][state[:questionIndex]][:description]}"}</h2>
+                <img class="officialOgp" src="official_ogp.png" alt="official ogp image" >
 
-              <div class="timer" id="timer">30</div>
-
-              <div class="questionButtons">
-                <button class="questionButton button" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
-                <button class="questionButton button" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
-                <button class="questionButton button" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
-                <button class="questionButton button" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
-              </div>
-            </div>
-          DOM
-        }
-
-        actions = {
-          selectChoice: ->(question, choiceIndex) {
-            state[:questionIndex] += 1
-
-            if question[:answerIndex] == choiceIndex
-              state[:correctAnswerCount] += 1
-              state[:lastQuestionResult] = 'correct'
-              showQuestionResultView
-            else
-              state[:lastQuestionResult] = 'incorrect'
-              showQuestionResultView
-            end
-
-            # タイマーのリセット
-            timerEl = JS.global[:document].getElementById('timer')
-            timerEl[:textContent] = 30
-          },
-        }
-
-        renderApp(state: state, view: questionView, actions: actions)
-      end
-
-      def showQuestionResultView
-        # 回答結果画面用の View
-        questionResultView = ->(state, actions) {
-          eval RubyWasmVdom::DomParser.parse(<<-DOM)
-            <div class="questionResult #{state[:lastQuestionResult]}">
-              {state[:text][:question_result_view][state[:lastQuestionResult].to_sym]}
-            </div>
-          DOM
-        }
-
-        renderApp(state: state, view: questionResultView, actions: {})
-
-        renderNextView = lambda {
-          if state[:questionIndex] == 5
-            showResultView()
-          else
-            showQuestionView()
-          end
-        }
-
-        # 次の問題画面 or 結果画面を 1 秒後に表示する
-        JS.global.call(:setTimeout, JS.try_convert(renderNextView), 1000)
-      end
-
-      def showResultView
-        # 結果画面用の View
-        resultView = ->(state, actions) {
-          eval RubyWasmVdom::DomParser.parse(<<-DOM)
-            <div>
-              <h2>{state[:text][:result_view][:title]}</h2>
-              <div class="resultArea">
-                <p class="resultText">{state[:text][:result_view][:detail].call(state[:correctAnswerCount])}</p>
-                <div class="techBlogLink">
-                  <img src="qrcode.png" alt="{state[:text][:result_view][:blog_alt]}" width="100" height="100">
-                  <span class="blogText">{state[:text][:result_view][:blog]}</span>
+                <div class="startResetButtonArea">
+                  <button class="startResetButton button" onclick='{->(e) { actions[:start].call(0, 0) } }'>{state[:text][:initial_view][:start]}</button>
                 </div>
               </div>
-
-              <h2>{state[:text][:explanation]}</h2>
-
-              <div class="explanationArea">
-                <p>{"#{state[:text][:question]} 1: #{state[:questions][0][:description]}"}</p>
-                <p>{"#{state[:text][:explanation]}: #{state[:questions][0][:explanation]}"}</p>
-                <br/>
-                <p>{"#{state[:text][:question]} 2: #{state[:questions][1][:description]}"}</p>
-                <p>{"#{state[:text][:explanation]}: #{state[:questions][1][:explanation]}"}</p>
-                <br/>
-                <p>{"#{state[:text][:question]} 3: #{state[:questions][2][:description]}"}</p>
-                <p>{"#{state[:text][:explanation]}: #{state[:questions][2][:explanation]}"}</p>
-                <br/>
-                <p>{"#{state[:text][:question]} 4: #{state[:questions][3][:description]}"}</p>
-                <p>{"#{state[:text][:explanation]}: #{state[:questions][3][:explanation]}"}</p>
-                <br/>
-                <p>{"#{state[:text][:question]} 5: #{state[:questions][4][:description]}"}</p>
-                <p>{"#{state[:text][:explanation]}: #{state[:questions][4][:explanation]}"}</p>
-                </div>
-
-              <div class="startResetButtonArea">
-                <button class="startResetButton button" onclick='{->(e) { actions[:reset].call(0, 0) } }'>{state[:text][:result_view][:reset]}</button>
-              </div>
-            </div>
-          DOM
-        }
-
-        actions = {
-          # actions 内で引数の数を 2 つにしないとバグるので無理やり2つ設定する
-          reset: ->(_a, _b) {
-            JS.global[:window][:location].reload();
+            DOM
           }
-        }
 
-        renderApp(state: state, view: resultView, actions: actions)
+          actions = {
+            # actions 内で引数の数を 2 つにしないとバグるので無理やり2つ設定する
+            start: ->(_a, _b) {
+              if state[:lang] == 'ja'
+                QUESTION_GROUPS.each do |group|
+                  group_questions = QUESTIONS.select {|question| question[:question_group_id] == group[:id] }
+                  state[:questions] << group_questions.sample
+                end
+              else
+                QUESTION_GROUPS.each do |group|
+                  group_questions = ENGLISH_QUESTIONS.select {|question| question[:question_group_id] == group[:id] }
+                  state[:questions] << group_questions.sample
+                end
+              end
+              puts state[:questions].map{ |q| q[:description] }
+              showQuestionView()
+            },
+            changeLang: ->(_a, _b) {
+              if state[:lang] == 'ja'
+                state[:lang] = 'en'
+                state[:text] = I18N[:en]
+              else
+                state[:lang] = 'ja'
+                state[:text] = I18N[:ja]
+              end
+              showInitialView()
+            }
+          }
+
+          renderApp(state: state, view: initialView, actions: actions)
+        end
+
+        private
+
+        def renderApp(state:, view:, actions:)
+          appEl = JS.global[:document].getElementById('app');
+          children = appEl[:children]
+
+          # 既存の view があれば非表示にする。
+          if children[:length].to_i > 0
+            children[0].remove()
+          end
+
+          render = lambda {
+            RubyWasmVdom::App.new(
+              el: "#app",
+              state:,
+              view:,
+              actions:
+            )
+          }
+
+          # すぐに描画するとエラーになるので、少し待ってから描画する
+          JS.global.call(:setTimeout, JS.try_convert(render))
+        end
+
+        def showQuestionView
+          # 問題 View
+          questionView = ->(state, actions) {
+            eval RubyWasmVdom::DomParser.parse(<<-DOM)
+              <div>
+                <h2>{"#{state[:text][:question]} #{state[:questions].index(state[:questions][state[:questionIndex]]) + 1}: #{state[:questions][state[:questionIndex]][:description]}"}</h2>
+
+                <div class="timer" id="timer">30</div>
+
+                <div class="questionButtons">
+                  <button class="questionButton button" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 0) } }'>{state[:questions][state[:questionIndex]][:choices][0]}</button>
+                  <button class="questionButton button" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 1) } }'>{state[:questions][state[:questionIndex]][:choices][1]}</button>
+                  <button class="questionButton button" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 2) } }'>{state[:questions][state[:questionIndex]][:choices][2]}</button>
+                  <button class="questionButton button" onclick='{->(e) { actions[:selectChoice].call(state[:questions][state[:questionIndex]], 3) } }'>{state[:questions][state[:questionIndex]][:choices][3]}</button>
+                </div>
+              </div>
+            DOM
+          }
+
+          actions = {
+            selectChoice: ->(question, choiceIndex) {
+              state[:questionIndex] += 1
+
+              if question[:answerIndex] == choiceIndex
+                state[:correctAnswerCount] += 1
+                state[:lastQuestionResult] = 'correct'
+                showQuestionResultView
+              else
+                state[:lastQuestionResult] = 'incorrect'
+                showQuestionResultView
+              end
+
+              # タイマーのリセット
+              timerEl = JS.global[:document].getElementById('timer')
+              timerEl[:textContent] = 30
+            },
+          }
+
+          renderApp(state: state, view: questionView, actions: actions)
+        end
+
+        def showQuestionResultView
+          # 回答結果画面用の View
+          questionResultView = ->(state, actions) {
+            eval RubyWasmVdom::DomParser.parse(<<-DOM)
+              <div class="questionResult #{state[:lastQuestionResult]}">
+                {state[:text][:question_result_view][state[:lastQuestionResult].to_sym]}
+              </div>
+            DOM
+          }
+
+          renderApp(state: state, view: questionResultView, actions: {})
+
+          renderNextView = lambda {
+            if state[:questionIndex] == 5
+              showResultView()
+            else
+              showQuestionView()
+            end
+          }
+
+          # 次の問題画面 or 結果画面を 1 秒後に表示する
+          JS.global.call(:setTimeout, JS.try_convert(renderNextView), 1000)
+        end
+
+        def showResultView
+          # 結果画面用の View
+          resultView = ->(state, actions) {
+            eval RubyWasmVdom::DomParser.parse(<<-DOM)
+              <div>
+                <h2>{state[:text][:result_view][:title]}</h2>
+                <div class="resultArea">
+                  <p class="resultText">{state[:text][:result_view][:detail].call(state[:correctAnswerCount])}</p>
+                  <div class="techBlogLink">
+                    <img src="qrcode.png" alt="{state[:text][:result_view][:blog_alt]}" width="100" height="100">
+                    <span class="blogText">{state[:text][:result_view][:blog]}</span>
+                  </div>
+                </div>
+
+                <h2>{state[:text][:explanation]}</h2>
+
+                <div class="explanationArea">
+                  <p>{"#{state[:text][:question]} 1: #{state[:questions][0][:description]}"}</p>
+                  <p>{"#{state[:text][:explanation]}: #{state[:questions][0][:explanation]}"}</p>
+                  <br/>
+                  <p>{"#{state[:text][:question]} 2: #{state[:questions][1][:description]}"}</p>
+                  <p>{"#{state[:text][:explanation]}: #{state[:questions][1][:explanation]}"}</p>
+                  <br/>
+                  <p>{"#{state[:text][:question]} 3: #{state[:questions][2][:description]}"}</p>
+                  <p>{"#{state[:text][:explanation]}: #{state[:questions][2][:explanation]}"}</p>
+                  <br/>
+                  <p>{"#{state[:text][:question]} 4: #{state[:questions][3][:description]}"}</p>
+                  <p>{"#{state[:text][:explanation]}: #{state[:questions][3][:explanation]}"}</p>
+                  <br/>
+                  <p>{"#{state[:text][:question]} 5: #{state[:questions][4][:description]}"}</p>
+                  <p>{"#{state[:text][:explanation]}: #{state[:questions][4][:explanation]}"}</p>
+                  </div>
+
+                <div class="startResetButtonArea">
+                  <button class="startResetButton button" onclick='{->(e) { actions[:reset].call(0, 0) } }'>{state[:text][:result_view][:reset]}</button>
+                </div>
+              </div>
+            DOM
+          }
+
+          actions = {
+            # actions 内で引数の数を 2 つにしないとバグるので無理やり2つ設定する
+            reset: ->(_a, _b) {
+              JS.global[:window][:location].reload();
+            }
+          }
+
+          renderApp(state: state, view: resultView, actions: actions)
+        end
       end
-    end
 
-    main = Main.new
-    main.showInitialView()
-  </script>
+      main = Main.new
+      main.showInitialView()
+    </script>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // タイマーの更新。ruby で実現できなかったので、JavaScript で実装
-      window.setInterval(() => {
-        timerEl = document.getElementById('timer')
-        if (!timerEl) return;
-        const currentValue = parseInt(timerEl.textContent)
-        timerEl.textContent = currentValue - 1;
-      }, 1000);
-    });
-  </script>
-</body>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // タイマーの更新。ruby で実現できなかったので、JavaScript で実装
+        window.setInterval(() => {
+          timerEl = document.getElementById("timer");
+          if (!timerEl) return;
+          const currentValue = parseInt(timerEl.textContent);
+          timerEl.textContent = currentValue - 1;
+        }, 1000);
+      });
+    </script>
+  </body>
 </html>

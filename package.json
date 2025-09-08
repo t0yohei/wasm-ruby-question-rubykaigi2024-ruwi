@@ -1,0 +1,19 @@
+{
+  "name": "wasm-ruby-question-rubykaigi2024-ruwi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "scripts": {
+    "serve:examples": "npx http-server . -o './index.html' --cors -P 'http://localhost:8080?' -c-1"
+  },
+  "homepage": "https://github.com/t0yohei/wasm-ruby-question-rubykaigi2024-ruwi#readme",
+  "bugs": {
+    "url": "https://github.com/t0yohei/wasm-ruby-question-rubykaigi2024-ruwi/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/t0yohei/wasm-ruby-question-rubykaigi2024-ruwi.git"
+  },
+  "license": "ISC",
+  "author": ""
+}
