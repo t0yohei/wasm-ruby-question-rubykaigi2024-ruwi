@@ -1,9 +1,5 @@
-# Ruby Quize at RubyKaigi 2024
+# Ruby Quize at RubyKaigi 2024 ruwi
 
-## AppPage
+Base repository https://github.com/t0yohei/wasm-ruby-question-rubykaigi2024
 
-https://wasm-ruby-question-rubykaigi2024.netlify.app/
-
-## BlogPage
-
-https://engineer.crowdworks.jp/entry/2024/05/15/094311
+This repository replace the code above with [ruby_wasm_ui](https://github.com/t0yohei/ruby-wasm-ui).
