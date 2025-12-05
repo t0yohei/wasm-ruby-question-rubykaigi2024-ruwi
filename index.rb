@@ -86,7 +86,7 @@ MainAppComponent = RubyWasmUi.define_component(
     }
   },
 
-  render: ->(component) {
+  template: ->(component) {
     state = component.state
 
     RubyWasmUi::Template::Parser.parse_and_eval(<<~HTML, binding)
@@ -135,7 +135,7 @@ MainAppComponent = RubyWasmUi.define_component(
 
 # 初期表示コンポーネント
 InitialViewComponent = RubyWasmUi.define_component(
-  render: ->(component) {
+  template: ->(component) {
     props = component.props
     RubyWasmUi::Template::Parser.parse_and_eval(<<~HTML, binding)
       <div>
@@ -162,7 +162,7 @@ InitialViewComponent = RubyWasmUi.define_component(
 
 # 問題表示コンポーネント
 QuestionViewComponent = RubyWasmUi.define_component(
-  render: ->(component) {
+  template: ->(component) {
     props = component.props
     questions = props[:questions] || []
     question_index = props[:question_index] || 0
@@ -200,7 +200,7 @@ QuestionViewComponent = RubyWasmUi.define_component(
 
 # タイマー表示コンポーネント
 TimerComponent = RubyWasmUi.define_component(
-  render: ->(component) {
+  template: ->(component) {
     props = component.props
     timer = props[:timer] || 30
     RubyWasmUi::Template::Parser.parse_and_eval(<<~HTML, binding)
@@ -217,7 +217,7 @@ TimerComponent = RubyWasmUi.define_component(
 
 # 問題結果表示コンポーネント
 QuestionResultViewComponent = RubyWasmUi.define_component(
-  render: ->(component) {
+  template: ->(component) {
     props = component.props
     last_question_result = props[:last_question_result] || ''
     text = props[:text] || I18N[:ja]
@@ -233,7 +233,7 @@ QuestionResultViewComponent = RubyWasmUi.define_component(
 
 # 最終結果表示コンポーネント
 ResultViewComponent = RubyWasmUi.define_component(
-  render: ->(component) {
+  template: ->(component) {
     props = component.props
     correct_answer_count = props[:correct_answer_count] || 0
     text = props[:text] || I18N[:ja]
