@@ -4,7 +4,7 @@
   "private": true,
   "description": "",
   "scripts": {
-    "serve:examples": "npx http-server . -o './index.html' --cors -P 'http://localhost:8080?' -c-1"
+    "serve:examples": "npx http-server . -o './cdn/index.html' --cors -P 'http://localhost:8080?' -c-1"
   },
   "homepage": "https://github.com/t0yohei/wasm-ruby-question-rubykaigi2024-ruwi#readme",
   "bugs": {
