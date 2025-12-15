@@ -1,8 +1,7 @@
 {
   "name": "wasm-ruby-question-rubykaigi2024-ruwi",
   "compatibility_date": "2025-12-05",
-  "pages_build_output_dir": "./cdn",
   "assets": {
-    "directory": "./src"
+    "directory": "."
   }
 }
