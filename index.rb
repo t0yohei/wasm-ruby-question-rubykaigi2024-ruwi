@@ -148,7 +148,7 @@ InitialViewComponent = RubyWasmUi.define_component(
           <li>{props[:text][:initial_view][:description_two]}</li>
         </ul>
 
-        <img class="officialOgp" src="official_ogp.png" alt="official ogp image" />
+        <img class="officialOgp" src="src/official_ogp.png" alt="official ogp image" />
 
         <div class="startResetButtonArea">
           <button class="startResetButton button" on="{click: ->(e) { component.emit('start', e) }}">
@@ -244,7 +244,7 @@ ResultViewComponent = RubyWasmUi.define_component(
         <div class="resultArea">
           <p class="resultText">{result_detail}</p>
           <div class="techBlogLink">
-            <img src="qrcode.png" alt="{text[:result_view][:blog_alt]}" width="100" height="100" />
+            <img src="src/qrcode.png" alt="{text[:result_view][:blog_alt]}" width="100" height="100" />
             <span class="blogText">{text[:result_view][:blog]}</span>
           </div>
         </div>

@@ -1,0 +1,96 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    ffi (1.17.2)
+    ffi (1.17.2-aarch64-linux-gnu)
+    ffi (1.17.2-aarch64-linux-musl)
+    ffi (1.17.2-arm-linux-gnu)
+    ffi (1.17.2-arm-linux-musl)
+    ffi (1.17.2-arm64-darwin)
+    ffi (1.17.2-x86-linux-gnu)
+    ffi (1.17.2-x86-linux-musl)
+    ffi (1.17.2-x86_64-darwin)
+    ffi (1.17.2-x86_64-linux-gnu)
+    ffi (1.17.2-x86_64-linux-musl)
+    js (2.7.2)
+    listen (3.9.0)
+      rb-fsevent (~> 0.10, >= 0.10.3)
+      rb-inotify (~> 0.9, >= 0.9.10)
+    logger (1.7.0)
+    nio4r (2.7.5)
+    puma (6.6.1)
+      nio4r (~> 2.0)
+    rack (3.2.4)
+    rb-fsevent (0.11.2)
+    rb-inotify (0.11.1)
+      ffi (~> 1.0)
+    ruby_wasm (2.7.2)
+      logger
+    ruby_wasm (2.7.2-aarch64-linux)
+      logger
+    ruby_wasm (2.7.2-aarch64-linux-musl)
+      logger
+    ruby_wasm (2.7.2-arm64-darwin)
+      logger
+    ruby_wasm (2.7.2-x86_64-darwin)
+      logger
+    ruby_wasm (2.7.2-x86_64-linux)
+      logger
+    ruby_wasm (2.7.2-x86_64-linux-musl)
+      logger
+    ruby_wasm_ui (0.9.1)
+      js (~> 2.7)
+      listen (~> 3.8)
+      puma (~> 6.0)
+      rack (~> 3.0)
+      ruby_wasm (~> 2.7)
+
+PLATFORMS
+  aarch64-linux
+  aarch64-linux-gnu
+  aarch64-linux-musl
+  arm-linux-gnu
+  arm-linux-musl
+  arm64-darwin
+  ruby
+  x86-linux-gnu
+  x86-linux-musl
+  x86_64-darwin
+  x86_64-linux
+  x86_64-linux-gnu
+  x86_64-linux-musl
+
+DEPENDENCIES
+  ruby_wasm_ui
+
+CHECKSUMS
+  ffi (1.17.2) sha256=297235842e5947cc3036ebe64077584bff583cd7a4e94e9a02fdec399ef46da6
+  ffi (1.17.2-aarch64-linux-gnu) sha256=c910bd3cae70b76690418cce4572b7f6c208d271f323d692a067d59116211a1a
+  ffi (1.17.2-aarch64-linux-musl) sha256=69e6556b091d45df83e6c3b19d3c54177c206910965155a6ec98de5e893c7b7c
+  ffi (1.17.2-arm-linux-gnu) sha256=d4a438f2b40224ae42ec72f293b3ebe0ba2159f7d1bd47f8417e6af2f68dbaa5
+  ffi (1.17.2-arm-linux-musl) sha256=977dfb7f3a6381206dbda9bc441d9e1f9366bf189a634559c3b7c182c497aaa3
+  ffi (1.17.2-arm64-darwin) sha256=54dd9789be1d30157782b8de42d8f887a3c3c345293b57ffb6b45b4d1165f813
+  ffi (1.17.2-x86-linux-gnu) sha256=95d8f9ebea23c39888e2ab85a02c98f54acb2f4e79b829250d7267ce741dc7b0
+  ffi (1.17.2-x86-linux-musl) sha256=41741449bab2b9530f42a47baa5c26263925306fad0ac2d60887f51af2e3b24c
+  ffi (1.17.2-x86_64-darwin) sha256=981f2d4e32ea03712beb26e55e972797c2c5a7b0257955d8667ba58f2da6440e
+  ffi (1.17.2-x86_64-linux-gnu) sha256=05d2026fc9dbb7cfd21a5934559f16293815b7ce0314846fee2ac8efbdb823ea
+  ffi (1.17.2-x86_64-linux-musl) sha256=97c0eb3981414309285a64dc4d466bd149e981c279a56371ef811395d68cb95c
+  js (2.7.2) sha256=7ffa18df04f0f27829d66c3e268e71f4ee0349a9dd4dd884487be5836a73bc1a
+  listen (3.9.0) sha256=db9e4424e0e5834480385197c139cb6b0ae0ef28cc13310cfd1ca78377d59c67
+  logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
+  nio4r (2.7.5) sha256=6c90168e48fb5f8e768419c93abb94ba2b892a1d0602cb06eef16d8b7df1dca1
+  puma (6.6.1) sha256=b9b56e4a4ea75d1bfa6d9e1972ee2c9f43d0883f011826d914e8e37b3694ea1e
+  rack (3.2.4) sha256=5d74b6f75082a643f43c1e76b419c40f0e5527fcfee1e669ac1e6b73c0ccb6f6
+  rb-fsevent (0.11.2) sha256=43900b972e7301d6570f64b850a5aa67833ee7d87b458ee92805d56b7318aefe
+  rb-inotify (0.11.1) sha256=a0a700441239b0ff18eb65e3866236cd78613d6b9f78fea1f9ac47a85e47be6e
+  ruby_wasm (2.7.2) sha256=6e197a3d48c83240fc741027d9a38ced8637604d2b77372b5ae587f742a1420d
+  ruby_wasm (2.7.2-aarch64-linux) sha256=be2243a5d91d5cba45d0acd567b01b3cee24323f153423b2b45546f9dc1288fa
+  ruby_wasm (2.7.2-aarch64-linux-musl) sha256=7fda4480a52a49afb6e3badf641f57c9e2d69d635d0613d054a06bf227635b3d
+  ruby_wasm (2.7.2-arm64-darwin) sha256=bf6762cec7886513d8cf2c9aaec961ae05c74ddac0e8e6f5b4ac135d56b9f13d
+  ruby_wasm (2.7.2-x86_64-darwin) sha256=7f7593519c9727303425c90abc403a227394025824fd35c0218406719e0fe584
+  ruby_wasm (2.7.2-x86_64-linux) sha256=b598670db8241f9ee6419c33d56f5675df7b19bab6507376502ea09222411e10
+  ruby_wasm (2.7.2-x86_64-linux-musl) sha256=861003277eb82ed39594ae80dd3512e1b97d51997db0d403a7c86e018220d933
+  ruby_wasm_ui (0.9.1) sha256=6d56861f2be603dc403aba93588b45771fce6325a074eada623c1d6cce7b7302
+
+BUNDLED WITH
+  4.0.1
