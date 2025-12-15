@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "i18n"
-require_relative "questions"
+require "js"
 
 # メインアプリケーションコンポーネント
 MainAppComponent = RubyWasmUi.define_component(

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>Ruby Quize at RubyKaigi 2024</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <script defer src="https://unpkg.com/ruby-wasm-ui@0.8.3"></script>
+    <script type="text/ruby" defer src="src/i18n.rb"></script>
+    <script type="text/ruby" defer src="src/questions.rb"></script>
+    <script type="text/ruby" defer src="index.rb"></script>
+
+    <style>
+      :root {
+        /* Color */
+        --color-primary: #0068b6;
+        --color-primary-dark: #004a97;
+        --color-blue-light: #e7f1fa;
+        --color-success: #177835;
+        --color-danger: #c92b36;
+        --color-gray: #617084;
+        --color-gray-light: #ecedf0;
+        --color-black: #353d48;
+        --color-white: rgb(255 255 255 / 100%);
+        --color-black-5: rgb(0 0 0 / 5%);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        position: relative;
+        font-family: "Hiragino Kaku Gothic Pro", sans-serif;
+        color: var(--color-black);
+        background-color: var(--color-blue-light);
+        width: 80vw;
+        margin-right: auto;
+        margin-left: auto;
+      }
+
+      .title {
+        color: var(--color-primary);
+      }
+
+      .logos {
+        position: absolute;
+        top: 0;
+        right: 0;
+        display: inline-flex;
+        gap: 16px;
+      }
+
+      @media (width < 600px) {
+        .logos {
+          position: relative;
+          margin-bottom: 10px;
+        }
+      }
+
+      .appArea {
+        position: relative;
+        background-color: var(--color-white);
+        min-height: 85vh;
+        padding: 10px 24px;
+        border-radius: 8px;
+      }
+
+      .officialOgp {
+        width: 68vw;
+        max-width: 600px;
+        height: auto;
+        display: flex;
+        margin: 40px auto;
+      }
+
+      .button {
+        margin: 0;
+        padding: 0 16px;
+        height: 40px;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+
+      .button:hover,
+      .button:focus {
+        background-image: linear-gradient(
+          var(--color-black-5),
+          var(--color-black-5)
+        );
+        background-blend-mode: multiply;
+      }
+
+      .ruleDescription {
+        font-size: 22px;
+      }
+
+      .changeLangButton {
+        font-size: 16px;
+        background-color: var(--color-white);
+        border: 1px solid var(--color-gray);
+        position: absolute;
+        right: 24px;
+        top: 30px;
+      }
+
+      .questionButtons {
+        margin: 0 32px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 28px;
+      }
+
+      @media (width < 600px) {
+        .questionButtons {
+          display: flex;
+          flex-direction: column;
+          margin: 0;
+          gap: 16px;
+        }
+      }
+
+      .questionButton {
+        height: 56px;
+        font-size: 22px;
+        width: 100%;
+        background-color: var(--color-white);
+        border: 1px solid var(--color-gray);
+        word-wrap: break-word;
+      }
+
+      .startResetButtonArea {
+        text-align: center;
+        margin-top: 35px;
+      }
+
+      .startResetButton {
+        height: 56px;
+        font-size: 22px;
+        width: 100%;
+        background-color: var(--color-primary);
+        color: var(--color-white);
+        border: 0;
+        max-width: 500px;
+        font-weight: bold;
+      }
+
+      .timer {
+        font-size: 80px;
+        text-align: center;
+        margin: 100px 0;
+      }
+
+      @media (width < 600px) {
+        .timer {
+          font-size: 48px;
+          text-align: center;
+          margin: 10px 0;
+        }
+      }
+
+      .correct {
+        color: var(--color-success);
+      }
+
+      .incorrect {
+        color: var(--color-danger);
+      }
+
+      .resultArea {
+        display: flex;
+        align-items: center;
+        padding: 0 40px;
+        position: relative;
+        height: 10vh;
+      }
+
+      .resultText {
+        text-align: center;
+        width: 100%;
+        font-size: 32px;
+        font-weight: bold;
+      }
+
+      @media (width < 600px) {
+        .resultText {
+          font-size: 20px;
+        }
+      }
+
+      .techBlogLink {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
+
+      @media (width < 600px) {
+        .techBlogLink {
+          display: none;
+        }
+      }
+
+      .blogText {
+        width: 300px;
+        text-align: center;
+        word-break: keep-all;
+      }
+
+      .questionResult {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 80vh;
+        font-size: 56px;
+        font-weight: bold;
+      }
+
+      .explanationArea {
+        padding: 0 40px;
+        overflow: scroll;
+        height: 40vh;
+        border: 1px solid var(--color-gray);
+        border-radius: 4px;
+        background-color: var(--color-gray-light);
+      }
+
+      .aboutRubyLogo {
+        float: right;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Ruby Quize at RubyKaigi 2024</h1>
+    <div class="logos">
+      <img
+        src="src/web-assembly-icon-128px.png"
+        alt="web assembly icon"
+        width="48"
+        height="48"
+      />
+      <span>
+        <img src="src/ruby.png" alt="ruby icon" width="48" height="48" />
+        <small>※</small>
+      </span>
+    </div>
+    <div id="app" class="appArea"></div>
+    <div class="aboutRubyLogo">
+      <small
+        >※
+        <a href="https://www.ruby-lang.org/ja/about/logo"
+          >https://www.ruby-lang.org/ja/about/logo</a
+        ></small
+      >
+    </div>
+  </body>
+</html>
