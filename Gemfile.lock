@@ -38,7 +38,7 @@ GEM
       logger
     ruby_wasm (2.7.2-x86_64-linux-musl)
       logger
-    ruby_wasm_ui (0.9.1)
+    ruwi (0.10.0)
       js (~> 2.7)
       listen (~> 3.8)
       puma (~> 6.0)
@@ -61,7 +61,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
-  ruby_wasm_ui
+  ruwi
 
 CHECKSUMS
   ffi (1.17.2) sha256=297235842e5947cc3036ebe64077584bff583cd7a4e94e9a02fdec399ef46da6
@@ -90,7 +90,7 @@ CHECKSUMS
   ruby_wasm (2.7.2-x86_64-darwin) sha256=7f7593519c9727303425c90abc403a227394025824fd35c0218406719e0fe584
   ruby_wasm (2.7.2-x86_64-linux) sha256=b598670db8241f9ee6419c33d56f5675df7b19bab6507376502ea09222411e10
   ruby_wasm (2.7.2-x86_64-linux-musl) sha256=861003277eb82ed39594ae80dd3512e1b97d51997db0d403a7c86e018220d933
-  ruby_wasm_ui (0.9.1) sha256=6d56861f2be603dc403aba93588b45771fce6325a074eada623c1d6cce7b7302
+  ruwi (0.10.0) sha256=224f191917c007490ce08c07aa0f144581ac5ddbfa03e7d9eeb5bc3961694e33
 
 BUNDLED WITH
   4.0.1

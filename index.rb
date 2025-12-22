@@ -3,7 +3,7 @@
 require "js"
 
 # メインアプリケーションコンポーネント
-MainAppComponent = RubyWasmUi.define_component(
+MainAppComponent = Ruwi.define_component(
   state: ->(props) {
     {
       questions: [],
@@ -89,7 +89,7 @@ MainAppComponent = RubyWasmUi.define_component(
   template: ->(component) {
     state = component.state
 
-    RubyWasmUi::Template::Parser.parse_and_eval(<<~HTML, binding)
+    Ruwi::Template::Parser.parse_and_eval(<<~HTML, binding)
       <div>
         <initial-view-component
           r-if="{state[:current_view] == 'initial'}"
@@ -134,10 +134,10 @@ MainAppComponent = RubyWasmUi.define_component(
 )
 
 # 初期表示コンポーネント
-InitialViewComponent = RubyWasmUi.define_component(
+InitialViewComponent = Ruwi.define_component(
   template: ->(component) {
     props = component.props
-    RubyWasmUi::Template::Parser.parse_and_eval(<<~HTML, binding)
+    Ruwi::Template::Parser.parse_and_eval(<<~HTML, binding)
       <div>
         <h2>{props[:text][:initial_view][:title]}</h2>
         <button class="changeLangButton button" on="{click: ->(e) { component.emit('change_lang', e) }}">
@@ -161,7 +161,7 @@ InitialViewComponent = RubyWasmUi.define_component(
 )
 
 # 問題表示コンポーネント
-QuestionViewComponent = RubyWasmUi.define_component(
+QuestionViewComponent = Ruwi.define_component(
   template: ->(component) {
     props = component.props
     questions = props[:questions] || []
@@ -171,7 +171,7 @@ QuestionViewComponent = RubyWasmUi.define_component(
     question_number = question_index + 1
     timer = props[:timer] || 30
 
-    RubyWasmUi::Template::Parser.parse_and_eval(<<~HTML, binding)
+    Ruwi::Template::Parser.parse_and_eval(<<~HTML, binding)
       <div>
         <h2>
           {text[:question]} {question_number}: {current_question[:description]}
@@ -199,11 +199,11 @@ QuestionViewComponent = RubyWasmUi.define_component(
 )
 
 # タイマー表示コンポーネント
-TimerComponent = RubyWasmUi.define_component(
+TimerComponent = Ruwi.define_component(
   template: ->(component) {
     props = component.props
     timer = props[:timer] || 30
-    RubyWasmUi::Template::Parser.parse_and_eval(<<~HTML, binding)
+    Ruwi::Template::Parser.parse_and_eval(<<~HTML, binding)
       <div class="timer" id="timer">{timer}</div>
     HTML
   },
@@ -216,14 +216,14 @@ TimerComponent = RubyWasmUi.define_component(
 )
 
 # 問題結果表示コンポーネント
-QuestionResultViewComponent = RubyWasmUi.define_component(
+QuestionResultViewComponent = Ruwi.define_component(
   template: ->(component) {
     props = component.props
     last_question_result = props[:last_question_result] || ''
     text = props[:text] || I18N[:ja]
     result_class = last_question_result
     result_text = text[:question_result_view][last_question_result.to_sym]
-    RubyWasmUi::Template::Parser.parse_and_eval(<<~HTML, binding)
+    Ruwi::Template::Parser.parse_and_eval(<<~HTML, binding)
       <div class="questionResult #{result_class}">
         {result_text}
       </div>
@@ -232,13 +232,13 @@ QuestionResultViewComponent = RubyWasmUi.define_component(
 )
 
 # 最終結果表示コンポーネント
-ResultViewComponent = RubyWasmUi.define_component(
+ResultViewComponent = Ruwi.define_component(
   template: ->(component) {
     props = component.props
     correct_answer_count = props[:correct_answer_count] || 0
     text = props[:text] || I18N[:ja]
     result_detail = text[:result_view][:detail].call(correct_answer_count)
-    RubyWasmUi::Template::Parser.parse_and_eval(<<~HTML, binding)
+    Ruwi::Template::Parser.parse_and_eval(<<~HTML, binding)
       <div>
         <h2>{text[:result_view][:title]}</h2>
         <div class="resultArea">
@@ -279,6 +279,6 @@ ResultViewComponent = RubyWasmUi.define_component(
 )
 
 # アプリケーションの作成とマウント
-app = RubyWasmUi::App.create(MainAppComponent)
+app = Ruwi::App.create(MainAppComponent)
 app_element = JS.global[:document].getElementById("app")
 app.mount(app_element)
